@@ -4,120 +4,78 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
-    <style>
-        /* --- Estilos Generales y Resets --- */
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            font-family: Arial, sans-serif;
-            -webkit-font-smoothing: antialiased;
-        }
-        table {
-            border-collapse: collapse;
-        }
-        a {
-            color: #005a9e; /* Azul institucional de Cantabria */
-            text-decoration: none;
-        }
-
-        /* --- Estilos para Móvil (Media Query) --- */
-        @media screen and (max-width: 600px) {
-            .container {
-                width: 100% !important;
-                border-radius: 0 !important;
-            }
-            .main-content {
-                padding: 20px !important;
-            }
-            .responsive-img {
-                width: 100% !important;
-                height: auto !important;
-            }
-        }
-
-    </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif;">
+<body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: {{ font_family }};">
     
-    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f4f4f4">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
         <tr>
             <td align="center" style="padding: 20px 0;">
                 
-                <!-- Contenedor Principal -->
-                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="90%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #dddddd; border-radius: 8px; overflow: hidden;" class="container">
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="90%" style="max-width: 600px; margin: 0 auto; border: 1px solid #dddddd; border-radius: 8px; overflow: hidden;" class="container">
                     
-                    <!-- 1. Cabecera (Logo CITED) -->
                     <tr>
-                        <td align="center" style="padding: 20px; text-align: center; background-color: #f9f9f9; font-family: Arial, sans-serif; color: #333333;">
+                        <td align="center" style="padding: 20px; text-align: center; background-color: #f9f9f9;">
                             <a href="{{ header_logo_link }}" target="_blank">
                                 <img src="{{ header_logo_src }}" alt="Logo CITED" style="max-width: 250px; height: auto; border: 0;">
                             </a>
                         </td>
                     </tr>
                     
-                    <!-- 2. Imagen Hero (Banner Principal) -->
-                    <tr>
-                        <td style="padding: 0 30px; font-family: Arial, sans-serif; color: #333333;">
+                    <tr bgcolor="{% if bg_type == 'solid' %}{{ bg_color }}{% else %}{{ bg_color_1 }}{% endif %}">
+                        <td style="padding: 0 30px;">
                             <a href="{{ hero_link }}" target="_blank">
                                 <img src="{{ hero_src }}" alt="{{ hero_alt }}" style="width: 100%; max-width: 540px; height: auto; display: block; border-radius: 5px;" class="responsive-img">
                             </a>
                         </td>
                     </tr>
 
-                    <!-- 3. Contenido Principal (Texto Intro) -->
-                    <tr>
-                        <td style="padding: 30px; font-family: Arial, sans-serif; color: #333333;" class="main-content">
-                            <h1 style="font-size: 24px; font-weight: bold; color: #003366; margin: 0 0 20px 0;">{{ intro_title }}</h1>
-                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px;">{{ intro_p1|safe }}</p>
-                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px;">{{ intro_p2|safe }}</p>
+                    <tr bgcolor="{% if bg_type == 'solid' %}{{ bg_color }}{% else %}{{ bg_color_1 }}{% endif %}">
+                        <td style="padding: 30px;" class="main-content">
+                            <h1 style="font-size: {{ title_font_size|default('24px') }}; font-weight: bold; margin: 0 0 20px 0;"><font color="{{ title_color }}">{{ intro_title }}</font></h1>
+                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px;"><font color="{{ text_color }}">{{ intro_p1|safe }}</font></p>
+                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px;"><font color="{{ text_color }}">{{ intro_p2|safe }}</font></p>
                         </td>
                     </tr>
 
-                    <!-- 4. Sección: Formación Docentes -->
-                    <tr>
-                        <td style="padding: 0 30px; padding-top: 20px; font-family: Arial, sans-serif; color: #333333;" class="main-content">
+                    <tr bgcolor="{% if bg_type == 'solid' %}{{ bg_color }}{% else %}{{ bg_color_1 }}{% endif %}">
+                        <td style="padding: 0 30px; padding-top: 20px;" class="main-content">
                             <img src="{{ section1_img_src }}" alt="{{ section1_img_alt }}" style="width: 100%; max-width: 540px; height: auto; display: block; border-radius: 5px; margin-bottom: 15px;" class="responsive-img">
-                            <h2 style="font-size: 20px; color: #005a9e; margin: 0 0 15px 0;">{{ section1_title }}</h2>
-                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px;">{{ section1_p|safe }}</p>
+                            <h2 style="font-size: {{ title_font_size|default('20px') }}; margin: 0 0 15px 0;"><font color="{{ title_color }}">{{ section1_title }}</font></h2>
+                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px;"><font color="{{ text_color }}">{{ section1_p|safe }}</font></p>
                             
-                            <!-- Botón CTA (Call to Action) -->
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="text-align: center; padding: 10px 0 20px 0; margin: 0 auto;">
                                 <tr>
-                                    <td align="center">
-                                        <a href="{{ section1_button_link }}" target="_blank" style="display: inline-block; background-color: #005a9e; color: #ffffff; padding: 12px 25px; font-size: 16px; font-weight: bold; text-decoration: none; border-radius: 5px;">{{ section1_button_text }}</a>
+                                    <td align="center" bgcolor="#005a9e" style="border-radius: 5px;">
+                                        <a href="{{ section1_button_link }}" target="_blank" style="display: inline-block; color: #ffffff; padding: 12px 25px; font-size: 16px; font-weight: bold; text-decoration: none;">{{ section1_button_text }}</a>
                                     </td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
 
-                    <!-- 5. Sección: Programas CITED -->
-                    <tr>
-                        <td style="padding: 0 30px; padding-top: 20px; font-family: Arial, sans-serif; color: #333333;" class="main-content">
+                    <tr bgcolor="{% if bg_type == 'solid' %}{{ bg_color }}{% else %}{{ bg_color_1 }}{% endif %}">
+                        <td style="padding: 0 30px; padding-top: 20px;" class="main-content">
                             <img src="{{ section2_img_src }}" alt="{{ section2_img_alt }}" style="width: 100%; max-width: 540px; height: auto; display: block; border-radius: 5px; margin-bottom: 15px;" class="responsive-img">
-                            <h2 style="font-size: 20px; color: #005a9e; margin: 0 0 15px 0;">{{ section2_title }}</h2>
-                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px;">{{ section2_p|safe }}</p>
+                            <h2 style="font-size: {{ title_font_size|default('20px') }}; margin: 0 0 15px 0;"><font color="{{ title_color }}">{{ section2_title }}</font></h2>
+                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px;"><font color="{{ text_color }}">{{ section2_p|safe }}</font></p>
                             
-                            <!-- Botón CTA (Call to Action) -->
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="text-align: center; padding: 10px 0 20px 0; margin: 0 auto;">
                                 <tr>
-                                    <td align="center">
-                                        <a href="{{ section2_button_link }}" target="_blank" style="display: inline-block; background-color: #005a9e; color: #ffffff; padding: 12px 25px; font-size: 16px; font-weight: bold; text-decoration: none; border-radius: 5px;">{{ section2_button_text }}</a>
+                                    <td align="center" bgcolor="#005a9e" style="border-radius: 5px;">
+                                        <a href="{{ section2_button_link }}" target="_blank" style="display: inline-block; color: #ffffff; padding: 12px 25px; font-size: 16px; font-weight: bold; text-decoration: none;">{{ section2_button_text }}</a>
                                     </td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
 
-                    <!-- 6. Sección "Video" -->
-                    <tr>
-                        <td style="padding: 30px 30px 0 30px; font-family: Arial, sans-serif; color: #333333;" class="main-content">
-                            <h2 style="font-size: 20px; color: #005a9e; margin: 0 0 15px 0;">{{ video_title }}</h2>
-                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px;">{{ video_p|safe }}</p>
+                    <tr bgcolor="{% if bg_type == 'solid' %}{{ bg_color }}{% else %}{{ bg_color_1 }}{% endif %}">
+                        <td style="padding: 30px 30px 0 30px;" class="main-content">
+                            <h2 style="font-size: {{ title_font_size|default('20px') }}; margin: 0 0 15px 0;"><font color="{{ title_color }}">{{ video_title }}</font></h2>
+                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px;"><font color="{{ text_color }}">{{ video_p|safe }}</font></p>
                         </td>
                     </tr>
-                    <tr>
+                    <tr bgcolor="{% if bg_type == 'solid' %}{{ bg_color }}{% else %}{{ bg_color_1 }}{% endif %}">
                         <td style="padding: 0 30px 30px 30px; text-align: center;">
                             <a href="{{ video_link }}" target="_blank" style="position: relative; text-align: center; display: block;">
                                 <img src="{{ video_thumbnail_src }}" alt="{{ video_thumbnail_alt }}" style="width: 100%; max-width: 540px; height: auto; display: block; border-radius: 5px;" class="responsive-img">
@@ -125,18 +83,16 @@
                         </td>
                     </tr>
 
-                    <!-- 7. Pie de Página (Footer) -->
                     <tr>
-                        <td align="center" style="padding: 30px; text-align: center; background-color: #f9f9f9; font-size: 12px; color: #777777; font-family: Arial, sans-serif;">
-                            <p style="font-size: 12px; color: #777777; margin: 0 0 10px 0;">
+                        <td align="center" style="padding: 30px; text-align: center; background-color: #f9f9f9; font-size: 12px; color: #777777;">
+                            <p style="font-size: 12px; margin: 0 0 10px 0;">
                                 <strong>CITED - Centro de Innovación y Tecnología Educativa</strong><br>
                                 Consejería de Educación, Formación Profesional y Universidades<br>
                                 Gobierno de Cantabria
                             </p>
-                            <p style="font-size: 12px; color: #777777; margin: 0 0 10px 0;">
-                                <!-- COMENTARIO: Inserta aquí tus enlaces a redes sociales si las tienes -->
+                            <p style="font-size: 12px; margin: 0 0 10px 0;">
                             </p>
-                            <p style="font-size: 12px; color: #777777; margin: 0 0 10px 0;">
+                            <p style="font-size: 12px; margin: 0 0 10px 0;">
                                 Visita nuestra web: <a href="{{ footer_web_link }}" target="_blank" style="color: #005a9e; text-decoration: underline;">{{ footer_web_text }}</a>
                             </p>
                             <p style="font-size: 10px; color: #999; margin: 0 0 10px 0;">
@@ -146,8 +102,7 @@
                     </tr>
 
                 </table>
-                <!-- Fin Contenedor Principal -->
-
+                
             </td>
         </tr>
     </table>

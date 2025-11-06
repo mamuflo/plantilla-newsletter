@@ -65,66 +65,60 @@
             border-radius: 8px;
             background-color: white;
         }
-        textarea {
-            width: 100%;
-            max-width: 800px;
-            min-height: 200px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 1em;
-            box-sizing: border-box;
-            font-family: monospace;
-            font-size: 0.9em;
-            background-color: #1e1e1e;
-            color: #d4d4d4;
-        }
     </style>
 </head>
 <body>
 
     <h1>Newsletter Generada</h1>
-    <p>Usa el botón para copiar el código HTML y pégalo en tu cliente de correo (como Outlook).</p>
+    <p>Usa el botón para copiar el contenido y pégalo en tu cliente de correo (como Outlook).</p>
 
     <div class="controls">
         <a href="/" class="button secondary">Volver al Formulario</a>
-        <button id="copyButton" class="button">Copiar Código HTML</button>
+        <button id="copyButton" class="button">Copiar para Outlook</button>
     </div>
-
-    <!-- El código HTML para copiar se inserta aquí -->
-    <textarea id="html_code" readonly>{{ newsletter_html }}</textarea>
 
     <div class="preview-container">
         <h2>Vista Previa</h2>
         <iframe id="preview-frame" title="Vista previa de la newsletter"></iframe>
     </div>
 
+    <!-- El código HTML para la vista previa se pasa de forma invisible -->
+    <div id="html_for_preview" style="display: none;">{{ newsletter_html|e }}</div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const copyButton = document.getElementById('copyButton');
-            const htmlCode = document.getElementById('html_code');
             const previewFrame = document.getElementById('preview-frame');
+            const htmlForPreview = document.getElementById('html_for_preview').textContent;
 
-            // 1. Copiar al portapapeles
-            copyButton.addEventListener('click', function() {
-                htmlCode.select();
-                navigator.clipboard.writeText(htmlCode.value).then(function() {
-                    copyButton.textContent = '¡Copiado!';
-                    copyButton.style.backgroundColor = '#28a745';
-                    setTimeout(function() {
-                        copyButton.textContent = 'Copiar Código HTML';
-                        copyButton.style.backgroundColor = '#005a9e';
-                    }, 2000);
-                }, function(err) {
-                    copyButton.textContent = 'Error al copiar';
-                    console.error('Error al copiar el texto: ', err);
-                });
-            });
-
-            // 2. Rellenar el iframe con el contenido para la vista previa
+            // 1. Rellenar el iframe con el contenido para la vista previa
             const frameDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
             frameDoc.open();
-            frameDoc.write(htmlCode.value);
+            frameDoc.write(htmlForPreview);
             frameDoc.close();
+
+            // 2. Copiar al portapapeles
+            copyButton.addEventListener('click', function() {
+                try {
+                    const blob = new Blob([htmlForPreview], { type: 'text/html' });
+                    const clipboardItem = new ClipboardItem({ 'text/html': blob });
+                    navigator.clipboard.write([clipboardItem]).then(function() {
+                        copyButton.textContent = '¡Copiado!';
+                        copyButton.style.backgroundColor = '#28a745';
+                    }, function(err) {
+                        copyButton.textContent = 'Error al copiar';
+                        console.error('Error al copiar el contenido: ', err);
+                    });
+                } catch (err) {
+                    console.error('Error al copiar el contenido: ', err);
+                    copyButton.textContent = 'Error';
+                }
+
+                setTimeout(function() {
+                    copyButton.textContent = 'Copiar para Outlook';
+                    copyButton.style.backgroundColor = '#005a9e';
+                }, 2000);
+            });
         });
     </script>
 

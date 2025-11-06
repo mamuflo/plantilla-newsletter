@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
+from pynliner import Pynliner
+import os
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -36,14 +39,41 @@ def index():
             'video_thumbnail_alt': request.form.get('video_thumbnail_alt'),
             'footer_web_link': request.form.get('footer_web_link'),
             'footer_web_text': request.form.get('footer_web_text'),
+            'bg_type': request.form.get('bg_type'),
+            'bg_color': request.form.get('bg_color'),
+            'bg_color_1': request.form.get('bg_color_1'),
+            'bg_color_2': request.form.get('bg_color_2'),
+            'title_color': request.form.get('title_color'),
+            'text_color': request.form.get('text_color'),
+            'font_family': request.form.get('font_family'),
+            'title_font_size': request.form.get('title_font_size'),
         }
+
+        # Guardar estilos en la sesión
+        session['styles'] = {
+            'bg_type': context['bg_type'],
+            'bg_color': context['bg_color'],
+            'bg_color_1': context['bg_color_1'],
+            'bg_color_2': context['bg_color_2'],
+            'title_color': context['title_color'],
+            'text_color': context['text_color'],
+            'font_family': context['font_family'],
+            'title_font_size': context['title_font_size'],
+        }
+
         # Renderizar la plantilla de la newsletter a una variable
         newsletter_html = render_template('template.html', **context)
+        
+        # Inliner los estilos CSS
+        p = Pynliner()
+        newsletter_html = p.from_string(newsletter_html).run()
+
         # Devolver la página de resultados con el código de la newsletter
         return render_template('result.html', newsletter_html=newsletter_html)
     
-    # Si es GET, mostrar el formulario
-    return render_template('index.html')
+    # Si es GET, mostrar el formulario con los estilos de la sesión si existen
+    styles = session.get('styles', {})
+    return render_template('index.html', **styles)
 
 if __name__ == '__main__':
     app.run(debug=True)

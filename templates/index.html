@@ -206,7 +206,55 @@
         </fieldset>
 
         <fieldset>
-            <legend>6. Pie de Página</legend>
+            <legend>7. Estilos de la Newsletter</legend>
+
+            <label for="bg_type">Tipo de Fondo:</label>
+            <select id="bg_type" name="bg_type">
+                <option value="solid" {% if bg_type == 'solid' %}selected{% endif %}>Color Sólido</option>
+                <option value="gradient" {% if bg_type == 'gradient' %}selected{% endif %}>Degradado</option>
+            </select>
+
+            <div id="solid_color_picker" style="display:{% if bg_type == 'gradient' %}none{% else %}block{% endif %};">
+                <label for="bg_color">Color de Fondo:</label>
+                <input type="color" id="bg_color" name="bg_color" value="{{ bg_color|default('#f2f2f2') }}">
+            </div>
+
+            <div id="gradient_color_picker" style="display:{% if bg_type == 'gradient' %}block{% else %}none{% endif %};">
+                <label for="bg_color_1">Color de Fondo 1:</label>
+                <input type="color" id="bg_color_1" name="bg_color_1" value="{{ bg_color_1|default('#f2f2f2') }}">
+                <label for="bg_color_2">Color de Fondo 2:</label>
+                <input type="color" id="bg_color_2" name="bg_color_2" value="{{ bg_color_2|default('#ffffff') }}">
+            </div>
+
+            <label for="title_color">Color de los Títulos:</label>
+            <input type="color" id="title_color" name="title_color" value="{{ title_color|default('#333333') }}">
+
+            <label for="title_font_size">Tamaño de los Títulos:</label>
+            <select id="title_font_size" name="title_font_size">
+                <option value="20px" {% if title_font_size == '20px' %}selected{% endif %}>20px</option>
+                <option value="24px" {% if title_font_size == '24px' %}selected{% endif %}>24px</option>
+                <option value="28px" {% if title_font_size == '28px' %}selected{% endif %}>28px</option>
+                <option value="32px" {% if title_font_size == '32px' %}selected{% endif %}>32px</option>
+            </select>
+
+            <label for="text_color">Color de los Párrafos:</label>
+            <input type="color" id="text_color" name="text_color" value="{{ text_color|default('#555555') }}">
+
+            <label for="font_family">Tipo de Fuente:</label>
+            <select id="font_family" name="font_family">
+                <option value="Arial, sans-serif" {% if font_family == 'Arial, sans-serif' %}selected{% endif %}>Arial</option>
+                <option value="Georgia, serif" {% if font_family == 'Georgia, serif' %}selected{% endif %}>Georgia</option>
+                <option value="'Times New Roman', Times, serif" {% if font_family == "'Times New Roman', Times, serif" %}selected{% endif %}>Times New Roman</option>
+                <option value="'Courier New', Courier, monospace" {% if font_family == "'Courier New', Courier, monospace" %}selected{% endif %}>Courier New</option>
+                <option value="Verdana, Geneva, sans-serif" {% if font_family == 'Verdana, Geneva, sans-serif' %}selected{% endif %}>Verdana</option>
+                <option value="'Roboto', sans-serif" {% if font_family == "'Roboto', sans-serif" %}selected{% endif %}>Roboto</option>
+                <option value="'Open Sans', sans-serif" {% if font_family == "'Open Sans', sans-serif" %}selected{% endif %}>Open Sans</option>
+                <option value="'Lato', sans-serif" {% if font_family == "'Lato', sans-serif" %}selected{% endif %}>Lato</option>
+            </select>
+        </fieldset>
+
+        <fieldset>
+            <legend>8. Pie de Página</legend>
             <label for="footer_web_link">Enlace Web del Pie de Página:</label>
             <input type="text" id="footer_web_link" name="footer_web_link" value="https://educantabria.es/web/cited">
 
@@ -219,6 +267,20 @@
         </div>
 
     </form>
+
+    <script>
+        document.getElementById('bg_type').addEventListener('change', function() {
+            var solidPicker = document.getElementById('solid_color_picker');
+            var gradientPicker = document.getElementById('gradient_color_picker');
+            if (this.value === 'solid') {
+                solidPicker.style.display = 'block';
+                gradientPicker.style.display = 'none';
+            } else {
+                solidPicker.style.display = 'none';
+                gradientPicker.style.display = 'block';
+            }
+        });
+    </script>
 
 </body>
 </html>
