@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Generador de Newsletter</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        body { 
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #f7f9fc;
+            margin: 0;
+            padding: 2em;
+            color: #333;
+        }
+        h1 { 
+            color: #003366; 
+            text-align: center;
+            margin-bottom: 1em;
+            font-weight: 700;
+        }
+        form { 
+            background-color: #fff; 
+            padding: 2.5em;
+            border-radius: 12px; 
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        fieldset { 
+            border: none;
+            padding: 2em;
+            margin-bottom: 1.5em; 
+            border-radius: 8px; 
+            transition: box-shadow 0.3s ease;
+            border-left: 5px solid;
+        }
+        fieldset:nth-of-type(1) { background-color: #eef7ff; border-left-color: #82c0ff; }
+        fieldset:nth-of-type(2) { background-color: #eefcfa; border-left-color: #7ee2d8; }
+        fieldset:nth-of-type(3) { background-color: #fef8e8; border-left-color: #ffd97d; }
+        fieldset:nth-of-type(4) { background-color: #fdeef4; border-left-color: #f7a8d0; }
+        fieldset:nth-of-type(5) { background-color: #f0eefd; border-left-color: #b1a8f7; }
+        fieldset:nth-of-type(6) { background-color: #eefdef; border-left-color: #a8f7a8; }
+
+        fieldset:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        legend { 
+            font-size: 1.5em; 
+            font-weight: 700; 
+            color: #005a9e; 
+            margin-bottom: 1em;
+            width: 100%;
+            padding-bottom: 0.5em;
+            border-bottom: 1px solid #ddd;
+        }
+        label { 
+            display: block; 
+            margin-bottom: 0.5em; 
+            font-weight: 700; 
+            color: #555; 
+        }
+        input[type="text"], textarea {
+            width: calc(100% - 24px); 
+            padding: 12px; 
+            margin-bottom: 1.5em; 
+            border: 1px solid #ccc; 
+            border-radius: 6px; 
+            font-size: 1em;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        input[type="text"]:focus, textarea:focus {
+            border-color: #005a9e;
+            box-shadow: 0 0 8px rgba(0, 90, 158, 0.2);
+            outline: none;
+        }
+        textarea { 
+            min-height: 120px; 
+            resize: vertical; 
+        }
+        .button-container { 
+            text-align: center; 
+            padding-top: 1em;
+        }
+        input[type="submit"] { 
+            background-color: #005a9e; 
+            color: white; 
+            padding: 15px 40px; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 1.2em; 
+            font-weight: 700;
+            cursor: pointer; 
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        input[type="submit"]:hover {
+            background-color: #003366;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Generador de Contenido para Newsletter</h1>
+    <form action="/" method="post">
+
+        <fieldset>
+            <legend>1. Cabecera y Banner</legend>
+            <label for="title">Título de la Página (pestaña del navegador):</label>
+            <input type="text" id="title" name="title" value="Newsletter CITED Cantabria">
+
+            <label for="header_logo_link">Enlace del Logo (Cabecera):</label>
+            <input type="text" id="header_logo_link" name="header_logo_link" value="https://educantabria.es/web/cited">
+
+            <label for="header_logo_src">URL de la Imagen del Logo (Cabecera):</label>
+            <input type="text" id="header_logo_src" name="header_logo_src" value="https://www.educantabria.es/documents/21790824/0/Logo+Cited_Aula+del+futuro+%281%29.png">
+
+            <label for="hero_link">Enlace del Banner Principal:</label>
+            <input type="text" id="hero_link" name="hero_link" value="https://educantabria.es/web/cited">
+
+            <label for="hero_src">URL de la Imagen del Banner Principal:</label>
+            <input type="text" id="hero_src" name="hero_src" value="https://www.educantabria.es/documents/21790824/21790904/artificial-intelligence-3706562_1920.jpg">
+
+            <label for="hero_alt">Texto Alternativo del Banner Principal:</label>
+            <input type="text" id="hero_alt" name="hero_alt" value="Innovación y Formación CITED">
+        </fieldset>
+
+        <fieldset>
+            <legend>2. Contenido Introductorio</legend>
+            <label for="intro_title">Título Principal:</label>
+            <input type="text" id="intro_title" name="intro_title" value="Descubre el CITED: Tu Futuro Empieza Aquí">
+
+            <label for="intro_p1">Párrafo de Introducción 1 (acepta HTML como &lt;strong&gt;):</label>
+            <textarea id="intro_p1" name="intro_p1">El &lt;strong&gt;Centro de Innovación y Tecnología Educativa de Cantabria (CITED)&lt;/strong&gt; es tu punto de referencia para la transformación digital en la educación.</textarea>
+
+            <label for="intro_p2">Párrafo de Introducción 2 (acepta HTML como &lt;strong&gt;):</label>
+            <textarea id="intro_p2" name="intro_p2">Explora nuestras nuevas líneas de formación, programas, recursos y proyectos diseñados para &lt;strong&gt;docentes&lt;/strong&gt; que buscan innovar en el aula.</textarea>
+        </fieldset>
+
+        <fieldset>
+            <legend>3. Sección 1 (Formación)</legend>
+            <label for="section1_img_src">URL de la Imagen (Sección 1):</label>
+            <input type="text" id="section1_img_src" name="section1_img_src" value="https://www.educantabria.es/documents/21790824/21790904/formacion.png">
+
+            <label for="section1_img_alt">Texto Alternativo de la Imagen (Sección 1):</label>
+            <input type="text" id="section1_img_alt" name="section1_img_alt" value="Formación para Docentes">
+
+            <label for="section1_title">Título (Sección 1):</label>
+            <input type="text" id="section1_title" name="section1_title" value="Formación del Profesorado">
+
+            <label for="section1_p">Párrafo (Sección 1):</label>
+            <textarea id="section1_p" name="section1_p">Actualiza tus competencias digitales, descubre metodologías activas y lidera el cambio en tu aula. Ofrecemos cursos prácticos, píldoras formativas y asesoramiento en proyectos de innovación.</textarea>
+
+            <label for="section1_button_link">Enlace del Botón (Sección 1):</label>
+            <input type="text" id="section1_button_link" name="section1_button_link" value="https://aulacited.educantabria.es">
+
+            <label for="section1_button_text">Texto del Botón (Sección 1):</label>
+            <input type="text" id="section1_button_text" name="section1_button_text" value="Ver Cursos para Docentes">
+        </fieldset>
+
+        <fieldset>
+            <legend>4. Sección 2 (Programas)</legend>
+            <label for="section2_img_src">URL de la Imagen (Sección 2):</label>
+            <input type="text" id="section2_img_src" name="section2_img_src" value="https://www.educantabria.es/documents/21790824/21790904/programas.png">
+
+            <label for="section2_img_alt">Texto Alternativo de la Imagen (Sección 2):</label>
+            <input type="text" id="section2_img_alt" name="section2_img_alt" value="Programas CITED">
+
+            <label for="section2_title">Título (Sección 2):</label>
+            <input type="text" id="section2_title" name="section2_title" value="Nuestros Programas">
+
+            <label for="section2_p">Párrafo (Sección 2):</label>
+            <textarea id="section2_p" name="section2_p">Descubre los programas de innovación que impulsamos desde el CITED, diseñados para fomentar la integración de la tecnología y las nuevas metodologías en los centros educativos de Cantabria.</textarea>
+
+            <label for="section2_button_link">Enlace del Botón (Sección 2):</label>
+            <input type="text" id="section2_button_link" name="section2_button_link" value="https://www.educantabria.es/web/cited/programas1">
+
+            <label for="section2_button_text">Texto del Botón (Sección 2):</label>
+            <input type="text" id="section2_button_text" name="section2_button_text" value="Ver Todos los Programas">
+        </fieldset>
+
+        <fieldset>
+            <legend>5. Sección de Vídeo</legend>
+            <label for="video_title">Título del Vídeo:</label>
+            <input type="text" id="video_title" name="video_title" value="Conoce el CITED en 1 Minuto">
+
+            <label for="video_p">Párrafo del Vídeo:</label>
+            <textarea id="video_p" name="video_p">Descubre nuestras instalaciones y todo lo que podemos ofrecerte en este breve video.</textarea>
+
+            <label for="video_link">Enlace al Archivo de Vídeo o Página:</label>
+            <input type="text" id="video_link" name="video_link" value="https://www.educantabria.es/documents/21790824/21790889/Bienvenid%40s+al+CITED.mp4">
+
+            <label for="video_thumbnail_src">URL de la Imagen Miniatura del Vídeo:</label>
+            <input type="text" id="video_thumbnail_src" name="video_thumbnail_src" value="https://www.educantabria.es/documents/21790824/21790904/video.png">
+
+            <label for="video_thumbnail_alt">Texto Alternativo de la Miniatura:</label>
+            <input type="text" id="video_thumbnail_alt" name="video_thumbnail_alt" value="Ver video sobre el CITED">
+        </fieldset>
+
+        <fieldset>
+            <legend>6. Pie de Página</legend>
+            <label for="footer_web_link">Enlace Web del Pie de Página:</label>
+            <input type="text" id="footer_web_link" name="footer_web_link" value="https://educantabria.es/web/cited">
+
+            <label for="footer_web_text">Texto del Enlace Web del Pie de Página:</label>
+            <input type="text" id="footer_web_text" name="footer_web_text" value="educantabria.es/web/cited">
+        </fieldset>
+
+        <div class="button-container">
+            <input type="submit" value="Generar Newsletter">
+        </div>
+
+    </form>
+
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Resultado de la Newsletter</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+        body { 
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #f7f9fc;
+            margin: 0;
+            padding: 2em;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 { 
+            color: #003366; 
+            font-weight: 700;
+        }
+        .controls {
+            display: flex;
+            gap: 1em;
+            margin-bottom: 2em;
+        }
+        .button {
+            background-color: #005a9e; 
+            color: white; 
+            padding: 12px 25px; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 1em; 
+            font-weight: 700;
+            cursor: pointer; 
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .button:hover {
+            background-color: #003366;
+            transform: translateY(-2px);
+        }
+        .button.secondary {
+            background-color: #6c757d;
+        }
+        .button.secondary:hover {
+            background-color: #5a6268;
+        }
+        .preview-container {
+            width: 100%;
+            max-width: 800px;
+            margin-top: 1em;
+        }
+        h2 { 
+            color: #005a9e; 
+            border-bottom: 2px solid #eef7ff;
+            padding-bottom: 0.5em;
+            margin-top: 2em;
+        }
+        iframe {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: white;
+        }
+        textarea {
+            width: 100%;
+            max-width: 800px;
+            min-height: 200px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 1em;
+            box-sizing: border-box;
+            font-family: monospace;
+            font-size: 0.9em;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Newsletter Generada</h1>
+    <p>Usa el botón para copiar el código HTML y pégalo en tu cliente de correo (como Outlook).</p>
+
+    <div class="controls">
+        <a href="/" class="button secondary">Volver al Formulario</a>
+        <button id="copyButton" class="button">Copiar Código HTML</button>
+    </div>
+
+    <!-- El código HTML para copiar se inserta aquí -->
+    <textarea id="html_code" readonly>{{ newsletter_html }}</textarea>
+
+    <div class="preview-container">
+        <h2>Vista Previa</h2>
+        <iframe id="preview-frame" title="Vista previa de la newsletter"></iframe>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const copyButton = document.getElementById('copyButton');
+            const htmlCode = document.getElementById('html_code');
+            const previewFrame = document.getElementById('preview-frame');
+
+            // 1. Copiar al portapapeles
+            copyButton.addEventListener('click', function() {
+                htmlCode.select();
+                navigator.clipboard.writeText(htmlCode.value).then(function() {
+                    copyButton.textContent = '¡Copiado!';
+                    copyButton.style.backgroundColor = '#28a745';
+                    setTimeout(function() {
+                        copyButton.textContent = 'Copiar Código HTML';
+                        copyButton.style.backgroundColor = '#005a9e';
+                    }, 2000);
+                }, function(err) {
+                    copyButton.textContent = 'Error al copiar';
+                    console.error('Error al copiar el texto: ', err);
+                });
+            });
+
+            // 2. Rellenar el iframe con el contenido para la vista previa
+            const frameDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
+            frameDoc.open();
+            frameDoc.write(htmlCode.value);
+            frameDoc.close();
+        });
+    </script>
+
+</body>
+</html>
