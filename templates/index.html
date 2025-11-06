@@ -3,6 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Generador de Newsletter</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.10.3/tinymce.min.js"></script>
+    <script>
+      tinymce.init({
+        selector: 'textarea',
+        plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+        toolbar_mode: 'floating',
+      });
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 

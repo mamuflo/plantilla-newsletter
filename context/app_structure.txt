@@ -1,0 +1,11 @@
+e:\newsletter\
+├───app.py
+├───newsletterCited.html
+├───Procfile
+├───requirements.txt
+├───.git\
+├───context\
+└───templates\
+    ├───index.html
+    ├───result.html
+    └───template.html
