@@ -123,25 +123,26 @@ def upload_image():
     if not file:
         return jsonify({'error': 'No file provided'}), 400
     
-        # Create a temporary file and write the content to it
-        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-            file.stream.seek(0) # Ensure stream is at the beginning
-            temp_file.write(file.stream.read())
-            temp_file_path = temp_file.name
-    
-        try:
-            file_metadata = {
-                'name': file.filename,
-                'parents': [folder_id] if folder_id else []
-            }
-    
-            media = MediaFileUpload(temp_file_path, mimetype=file.mimetype, resumable=True)
-            
-            request_drive = drive_service.files().create(media_body=media, body=file_metadata, fields='id, webViewLink')
-            response = request_drive.execute()
-        finally:
-            # Clean up the temporary file
-            os.remove(temp_file_path)    
+    # Create a temporary file and write the content to it
+    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        file.stream.seek(0) # Ensure stream is at the beginning
+        temp_file.write(file.stream.read())
+        temp_file_path = temp_file.name
+
+    try:
+        file_metadata = {
+            'name': file.filename,
+            'parents': [folder_id] if folder_id else []
+        }
+
+        media = MediaFileUpload(temp_file_path, mimetype=file.mimetype, resumable=True)
+        
+        request_drive = drive_service.files().create(media_body=media, body=file_metadata, fields='id, webViewLink')
+        response = request_drive.execute()
+    finally:
+        # Clean up the temporary file
+        os.remove(temp_file_path)
+
     # Hacer el archivo público
     file_id = response.get('id')
     permission = {'type': 'anyone', 'role': 'reader'}
