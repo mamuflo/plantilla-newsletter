@@ -129,6 +129,7 @@ def upload_image():
         temp_file.write(file.stream.read())
         temp_file_path = temp_file.name
 
+    response = None
     try:
         file_metadata = {
             'name': file.filename,
@@ -139,9 +140,14 @@ def upload_image():
         
         request_drive = drive_service.files().create(media_body=media, body=file_metadata, fields='id, webViewLink')
         response = request_drive.execute()
+    except Exception as e:
+        print(f"Error uploading to Drive: {e}")
     finally:
         # Clean up the temporary file
         os.remove(temp_file_path)
+
+    if not response:
+        return jsonify({'error': 'Failed to upload file to Google Drive'}), 500
 
     # Hacer el archivo público
     file_id = response.get('id')
@@ -171,6 +177,7 @@ def upload_video():
         temp_file.write(file.stream.read())
         temp_file_path = temp_file.name
 
+    response = None
     try:
         body = {
             'snippet': {
@@ -193,9 +200,15 @@ def upload_video():
         )
         
         response = request_youtube.execute()
+    except Exception as e:
+        print(f"Error uploading to YouTube: {e}")
     finally:
         # Clean up the temporary file
         os.remove(temp_file_path)
+        
+    if not response:
+        return jsonify({'error': 'Failed to upload file to YouTube'}), 500
+
     # Obtener el ID del video de la respuesta de YouTube
     video_id = response.get('id')
     video_url = "https://www.youtube.com/watch?v={}".format(video_id)
