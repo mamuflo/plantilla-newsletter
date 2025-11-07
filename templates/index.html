@@ -43,12 +43,13 @@
             transition: box-shadow 0.3s ease;
             border-left: 5px solid;
         }
-        fieldset:nth-of-type(1) { background-color: #eef7ff; border-left-color: #82c0ff; }
-        fieldset:nth-of-type(2) { background-color: #eefcfa; border-left-color: #7ee2d8; }
-        fieldset:nth-of-type(3) { background-color: #fef8e8; border-left-color: #ffd97d; }
-        fieldset:nth-of-type(4) { background-color: #fdeef4; border-left-color: #f7a8d0; }
-        fieldset:nth-of-type(5) { background-color: #f0eefd; border-left-color: #b1a8f7; }
-        fieldset:nth-of-type(6) { background-color: #eefdef; border-left-color: #a8f7a8; }
+        fieldset:nth-of-type(1) { background-color: #e8f4fd; border-left-color: #5b9bd5; }
+        fieldset:nth-of-type(2) { background-color: #eef7ff; border-left-color: #82c0ff; }
+        fieldset:nth-of-type(3) { background-color: #eefcfa; border-left-color: #7ee2d8; }
+        fieldset:nth-of-type(4) { background-color: #fef8e8; border-left-color: #ffd97d; }
+        fieldset:nth-of-type(5) { background-color: #fdeef4; border-left-color: #f7a8d0; }
+        fieldset:nth-of-type(6) { background-color: #f0eefd; border-left-color: #b1a8f7; }
+        fieldset:nth-of-type(7) { background-color: #eefdef; border-left-color: #a8f7a8; }
 
         fieldset:hover {
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
@@ -90,7 +91,7 @@
             text-align: center; 
             padding-top: 1em;
         }
-        input[type="submit"] { 
+        input[type="submit"], .upload-button, .auth-button { 
             background-color: #005a9e; 
             color: white; 
             padding: 15px 40px; 
@@ -100,10 +101,40 @@
             font-weight: 700;
             cursor: pointer; 
             transition: background-color 0.3s, transform 0.2s;
+            text-decoration: none;
+            display: inline-block;
         }
-        input[type="submit"]:hover {
+        input[type="submit"]:hover, .upload-button:hover, .auth-button:hover {
             background-color: #003366;
             transform: translateY(-2px);
+        }
+        .upload-button {
+            font-size: 0.9em;
+            padding: 10px 20px;
+            margin-left: 10px;
+        }
+        .resource-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1em;
+        }
+        .resource-item input[type="file"] {
+            flex-grow: 1;
+        }
+        .status-indicator {
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 1em;
+        }
+        .status-connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
         }
     </style>
 </head>
@@ -111,6 +142,63 @@
 
     <h1>Generador de Contenido para Newsletter</h1>
     <form action="/" method="post">
+
+        <fieldset>
+            <legend>Subida de Recursos</legend>
+            {% if not credentials_exist %}
+                <p>Para subir tus imágenes y vídeos, primero necesitas conectar tu cuenta de Google.</p>
+                <a href="/authorize" class="auth-button">Conectar con Google</a>
+                <div class="status-indicator status-disconnected">Estado: No conectado</div>
+            {% else %}
+                <div class="status-indicator status-connected">Estado: Conectado a Google. ¡Listo para subir!</div>
+            {% endif %}
+            
+            <div id="upload-section" {% if not credentials_exist %}style="display:none;"{% endif %}>
+                
+                <h4>Configuración de Google Drive</h4>
+                <div class="resource-item">
+                    <label for="drive_folder_name" style="flex-basis: 200px;">Carpeta en Drive:</label>
+                    <input type="text" id="drive_folder_name" placeholder="Ej: Newsletter_Imagenes" style="margin-bottom: 0;">
+                    <button type="button" class="upload-button" onclick="getOrCreateFolder()">Crear/Usar Carpeta</button>
+                </div>
+                <input type="hidden" id="drive_folder_id">
+                <hr style="margin: 2em 0;">
+
+                <h4>Imágenes (subir a Google Drive)</h4>
+                <div class="resource-item">
+                    <label for="header_logo_src_upload" style="flex-basis: 200px;">Logo (Cabecera):</label>
+                    <input type="file" id="header_logo_src_upload" accept="image/*">
+                    <button type="button" class="upload-button" onclick="uploadFile('header_logo_src_upload', 'header_logo_src', 'image')">Subir</button>
+                </div>
+                <div class="resource-item">
+                    <label for="hero_src_upload" style="flex-basis: 200px;">Banner Principal:</label>
+                    <input type="file" id="hero_src_upload" accept="image/*">
+                    <button type="button" class="upload-button" onclick="uploadFile('hero_src_upload', 'hero_src', 'image')">Subir</button>
+                </div>
+                <div class="resource-item">
+                    <label for="section1_img_src_upload" style="flex-basis: 200px;">Imagen (Sección 1):</label>
+                    <input type="file" id="section1_img_src_upload" accept="image/*">
+                    <button type="button" class="upload-button" onclick="uploadFile('section1_img_src_upload', 'section1_img_src', 'image')">Subir</button>
+                </div>
+                <div class="resource-item">
+                    <label for="section2_img_src_upload" style="flex-basis: 200px;">Imagen (Sección 2):</label>
+                    <input type="file" id="section2_img_src_upload" accept="image/*">
+                    <button type="button" class="upload-button" onclick="uploadFile('section2_img_src_upload', 'section2_img_src', 'image')">Subir</button>
+                </div>
+                 <div class="resource-item">
+                    <label for="video_thumbnail_src_upload" style="flex-basis: 200px;">Miniatura Vídeo:</label>
+                    <input type="file" id="video_thumbnail_src_upload" accept="image/*">
+                    <button type="button" class="upload-button" onclick="uploadFile('video_thumbnail_src_upload', 'video_thumbnail_src', 'image')">Subir</button>
+                </div>
+
+                <h4>Vídeo (subir a YouTube)</h4>
+                <div class="resource-item">
+                    <label for="video_link_upload" style="flex-basis: 200px;">Vídeo Principal:</label>
+                    <input type="file" id="video_link_upload" accept="video/*">
+                    <button type="button" class="upload-button" onclick="uploadFile('video_link_upload', 'video_link', 'video')">Subir</button>
+                </div>
+            </div>
+        </fieldset>
 
         <fieldset>
             <legend>1. Cabecera y Banner</legend>
@@ -280,6 +368,92 @@
                 gradientPicker.style.display = 'block';
             }
         });
+
+        function getOrCreateFolder() {
+            const folderName = document.getElementById('drive_folder_name').value;
+            if (!folderName) {
+                alert("Por favor, introduce un nombre para la carpeta.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('folderName', folderName);
+
+            fetch('/get_or_create_folder', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.folderId) {
+                    document.getElementById('drive_folder_id').value = data.folderId;
+                    alert(`Carpeta '${folderName}' lista para usar.`);
+                } else {
+                    throw new Error(data.error || 'No se pudo obtener el ID de la carpeta.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Error al procesar la carpeta: " + error.message);
+            });
+        }
+
+        function uploadFile(fileInputId, targetInputId, type) {
+            const fileInput = document.getElementById(fileInputId);
+            const file = fileInput.files[0];
+            if (!file) {
+                alert("Por favor, selecciona un archivo primero.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            if (type === 'image') {
+                const folderId = document.getElementById('drive_folder_id').value;
+                if (!folderId) {
+                    alert("Por favor, primero crea o verifica una carpeta de Google Drive.");
+                    return;
+                }
+                formData.append('folderId', folderId);
+            }
+
+            const targetInput = document.getElementById(targetInputId);
+            const originalValue = targetInput.value;
+            const uploadButton = fileInput.nextElementSibling;
+            uploadButton.textContent = "Subiendo...";
+            uploadButton.disabled = true;
+
+            const endpoint = type === 'image' ? '/upload_image' : '/upload_video';
+
+            fetch(endpoint, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error en la subida. Código de estado: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.url) {
+                    targetInput.value = data.url;
+                    alert("¡Subida completada! La URL ha sido actualizada.");
+                } else {
+                    throw new Error(data.error || 'No se recibió una URL.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Error en la subida: " + error.message);
+                targetInput.value = originalValue; // Revertir al valor original si hay error
+            })
+            .finally(() => {
+                uploadButton.textContent = "Subir";
+                uploadButton.disabled = false;
+            });
+        }
     </script>
 
 </body>

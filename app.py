@@ -1,12 +1,157 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, request, session
-from pynliner import Pynliner
 import os
+from flask import Flask, render_template, request, session, redirect, url_for, jsonify
+from pynliner import Pynliner
+import google.oauth2.credentials
+import google_auth_oauthlib.flow
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
-@app.route('/', methods=['GET', 'POST'])
+# Configuración de OAuth
+CLIENT_SECRETS_FILE = "client_secret.json"
+SCOPES = [
+    'https://www.googleapis.com/auth/drive.file',
+    'https://www.googleapis.com/auth/youtube.upload'
+]
+API_SERVICE_NAME = 'youtube'
+API_VERSION = 'v3'
+
+@app.route('/authorize')
+def authorize():
+    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+        CLIENT_SECRETS_FILE, scopes=SCOPES)
+    flow.redirect_uri = url_for('oauth2callback', _external=True)
+    authorization_url, state = flow.authorization_url(
+        access_type='offline',
+        include_granted_scopes='true')
+    session['state'] = state
+    return redirect(authorization_url)
+
+@app.route('/oauth2callback')
+def oauth2callback():
+    state = session['state']
+    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+        CLIENT_SECRETS_FILE, scopes=SCOPES, state=state)
+    flow.redirect_uri = url_for('oauth2callback', _external=True)
+    authorization_response = request.url
+    flow.fetch_token(authorization_response=authorization_response)
+    credentials = flow.credentials
+    session['credentials'] = credentials_to_dict(credentials)
+    return redirect(url_for('index'))
+
+def credentials_to_dict(credentials):
+    return {'token': credentials.token,
+            'refresh_token': credentials.refresh_token,
+            'token_uri': credentials.token_uri,
+            'client_id': credentials.client_id,
+            'client_secret': credentials.client_secret,
+            'scopes': credentials.scopes}
+
+def get_or_create_folder():
+    if 'credentials' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+
+    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
+    drive_service = build('drive', 'v3', credentials=credentials)
+
+    folder_name = request.form.get('folderName')
+    if not folder_name:
+        return jsonify({'error': 'No folder name provided'}), 400
+
+    # Buscar si la carpeta ya existe
+    query = "mimeType='application/vnd.google-apps.folder' and name='{}' and trashed=false".format(folder_name)
+    response = drive_service.files().list(q=query, spaces='drive', fields='files(id, name)').execute()
+    files = response.get('files', [])
+
+    if files:
+        # Carpeta encontrada
+        folder_id = files[0].get('id')
+        return jsonify({'folderId': folder_id})
+    else:
+        # Crear la carpeta
+        file_metadata = {
+            'name': folder_name,
+            'mimeType': 'application/vnd.google-apps.folder'
+        }
+        folder = drive_service.files().create(body=file_metadata, fields='id').execute()
+        return jsonify({'folderId': folder.get('id')})
+
+def upload_image():
+    if 'credentials' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
+    drive_service = build('drive', 'v3', credentials=credentials)
+    
+    file = request.files['file']
+    folder_id = request.form.get('folderId')
+
+    if not file:
+        return jsonify({'error': 'No file provided'}), 400
+
+    file_metadata = {
+        'name': file.filename,
+        'parents': [folder_id] if folder_id else []
+    }
+
+    media = MediaFileUpload(file, mimetype=file.mimetype, resumable=True)
+    
+    request_drive = drive_service.files().create(media_body=media, body=file_metadata, fields='id, webViewLink')
+    response = request_drive.execute()
+    
+    # Hacer el archivo público
+    file_id = response.get('id')
+    permission = {'type': 'anyone', 'role': 'reader'}
+    drive_service.permissions().create(fileId=file_id, body=permission).execute()
+    
+    # Obtener el enlace público
+    file_data = drive_service.files().get(fileId=file_id, fields='webViewLink').execute()
+    
+    return jsonify({'url': file_data['webViewLink']})
+
+def upload_video():
+    if 'credentials' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+
+    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
+    youtube_service = build(API_SERVICE_NAME, API_VERSION, credentials=credentials)
+
+    file = request.files['file']
+    if not file:
+        return jsonify({'error': 'No file provided'}), 400
+
+    body = {
+        'snippet': {
+            'title': 'Video subido desde la App de Newsletter',
+            'description': 'Este es un video subido a través de la aplicación de generación de newsletters.',
+            'tags': ['newsletter', 'video'],
+            'categoryId': '22' 
+        },
+        'status': {
+            'privacyStatus': 'public' 
+        }
+    }
+
+    media = MediaFileUpload(file, chunksize=-1, resumable=True)
+    
+    request_youtube = youtube_service.videos().insert(
+        part=','.join(body.keys()),
+        body=body,
+        media_body=media
+    )
+    
+    response = request_youtube.execute()
+    # Obtener el ID del video de la respuesta de YouTube
+    video_id = response.get('id')
+    video_url = "https://www.youtube.com/watch?v={}".format(video_id)
+
+    return jsonify({'url': video_url})
+
+
+@app.route('/')
 def index():
     if request.method == 'POST':
         # Recoger datos del formulario
@@ -73,7 +218,9 @@ def index():
     
     # Si es GET, mostrar el formulario con los estilos de la sesión si existen
     styles = session.get('styles', {})
-    return render_template('index.html', **styles)
+    credentials_exist = 'credentials' in session
+    return render_template('index.html', credentials_exist=credentials_exist, **styles)
 
 if __name__ == '__main__':
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
     app.run(debug=True)
