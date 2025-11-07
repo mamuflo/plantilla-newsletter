@@ -138,7 +138,7 @@ def upload_image():
 
         media = MediaFileUpload(temp_file_path, mimetype=file.mimetype, resumable=True)
         
-        request_drive = drive_service.files().create(media_body=media, body=file_metadata, fields='id, webViewLink')
+        request_drive = drive_service.files().create(media_body=media, body=file_metadata, fields='id, webViewLink, webContentLink')
         response = request_drive.execute()
     except Exception as e:
         print("Error uploading to Drive: {}".format(e))
@@ -154,10 +154,8 @@ def upload_image():
     permission = {'type': 'anyone', 'role': 'reader'}
     drive_service.permissions().create(fileId=file_id, body=permission).execute()
     
-    # Construir el enlace de acceso directo
-    direct_link = "https://drive.google.com/uc?id={}".format(file_id)
-    
-    return jsonify({'url': direct_link})
+    # Devolver el enlace de contenido web para incrustación directa
+    return jsonify({'url': response.get('webContentLink')})
 
 @app.route('/upload_video', methods=['POST'])
 def upload_video():
@@ -331,13 +329,12 @@ def list_images_in_folder(folder_id):
             response = drive_service.files().list(
                 q="'{}' in parents and mimeType contains 'image/' and trashed=false".format(folder_id),
                 spaces='drive',
-                fields='nextPageToken, files(id, name)',
+                fields='nextPageToken, files(id, name, webContentLink)',
                 pageToken=page_token
             ).execute()
             
             for file in response.get('files', []):
-                direct_link = "https://drive.google.com/uc?id={}".format(file.get('id'))
-                images.append({'id': file.get('id'), 'name': file.get('name'), 'url': direct_link})
+                images.append({'id': file.get('id'), 'name': file.get('name'), 'url': file.get('webContentLink')})
             
             page_token = response.get('nextPageToken', None)
             if page_token is None:

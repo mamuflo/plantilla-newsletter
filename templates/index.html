@@ -561,6 +561,8 @@
 
                         const targetInputId = placeholder.getAttribute('data-target-input');
                         const select = document.createElement('select');
+                        select.classList.add('image-reuse-selector');
+                        select.setAttribute('data-target-input', targetInputId);
                         select.style.marginLeft = '10px';
                         select.style.maxWidth = '200px';
 
@@ -578,14 +580,6 @@
                             select.appendChild(option);
                         });
 
-                        // Event listener para actualizar el campo de texto
-                        select.addEventListener('change', function() {
-                            const targetInput = document.getElementById(targetInputId);
-                            if (targetInput) {
-                                targetInput.value = this.value;
-                            }
-                        });
-
                         placeholder.appendChild(select);
                     });
                 })
@@ -595,16 +589,32 @@
         }
 
         async function uploadAllImages() {
+            // 1. Procesar los desplegables de reutilización de imágenes
+            const imageSelectors = document.querySelectorAll('.image-reuse-selector');
+            let selectorsProcessed = 0;
+            imageSelectors.forEach(select => {
+                const imageUrl = select.value;
+                if (imageUrl) {
+                    const targetInputId = select.getAttribute('data-target-input');
+                    const targetInput = document.getElementById(targetInputId);
+                    if (targetInput) {
+                        targetInput.value = imageUrl;
+                        selectorsProcessed++;
+                    }
+                }
+            });
+
+            if (selectorsProcessed > 0) {
+                alert(`${selectorsProcessed} campo(s) de imagen actualizados desde los desplegables.`);
+            }
+
+            // 2. Proceder con la subida de nuevos archivos
             const uploadButton = document.querySelector('button[onclick="uploadAllImages()"]');
             const originalButtonText = uploadButton.textContent;
-            uploadButton.textContent = "Subiendo...";
-            uploadButton.disabled = true;
-
+            
             const folderId = document.getElementById('drive_folder_id').value;
             if (!folderId) {
-                alert("Por favor, primero crea o verifica una carpeta de Google Drive.");
-                uploadButton.textContent = originalButtonText;
-                uploadButton.disabled = false;
+                alert("Por favor, primero crea o verifica una carpeta de Google Drive para subir nuevos archivos.");
                 return;
             }
 
@@ -612,11 +622,14 @@
             const filesToUpload = Array.from(fileInputs).filter(input => input.files.length > 0);
 
             if (filesToUpload.length === 0) {
-                alert("No has seleccionado ninguna imagen para subir.");
-                uploadButton.textContent = originalButtonText;
-                uploadButton.disabled = false;
+                if (selectorsProcessed === 0) {
+                    alert("No has seleccionado ninguna imagen para subir ni has elegido ninguna de los desplegables.");
+                }
                 return;
             }
+
+            uploadButton.textContent = "Subiendo...";
+            uploadButton.disabled = true;
 
             const uploadPromises = filesToUpload.map(fileInput => {
                 const file = fileInput.files[0];
@@ -629,7 +642,7 @@
                 const successfulUploads = results.filter(r => r.success).length;
                 const failedUploads = results.length - successfulUploads;
 
-                let message = `${successfulUploads} de ${results.length} imágenes subidas con éxito.`;
+                let message = `${successfulUploads} de ${results.length} imágenes nuevas subidas con éxito.`;
                 if (failedUploads > 0) {
                     message += `\n${failedUploads} subidas fallaron. Revisa la consola para más detalles.`;
                 };
