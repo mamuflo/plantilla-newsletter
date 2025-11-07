@@ -141,7 +141,7 @@ def upload_image():
         request_drive = drive_service.files().create(media_body=media, body=file_metadata, fields='id, webViewLink')
         response = request_drive.execute()
     except Exception as e:
-        print(f"Error uploading to Drive: {e}")
+        print("Error uploading to Drive: {}".format(e))
     finally:
         # Clean up the temporary file
         os.remove(temp_file_path)
@@ -154,10 +154,10 @@ def upload_image():
     permission = {'type': 'anyone', 'role': 'reader'}
     drive_service.permissions().create(fileId=file_id, body=permission).execute()
     
-    # Obtener el enlace público
-    file_data = drive_service.files().get(fileId=file_id, fields='webViewLink').execute()
+    # Construir el enlace de acceso directo
+    direct_link = "https://drive.google.com/uc?export=view&id={}".format(file_id)
     
-    return jsonify({'url': file_data['webViewLink']})
+    return jsonify({'url': direct_link})
 
 @app.route('/upload_video', methods=['POST'])
 def upload_video():
@@ -201,7 +201,7 @@ def upload_video():
         
         response = request_youtube.execute()
     except Exception as e:
-        print(f"Error uploading to YouTube: {e}")
+        print("Error uploading to YouTube: {}".format(e))
     finally:
         # Clean up the temporary file
         os.remove(temp_file_path)
@@ -209,12 +209,45 @@ def upload_video():
     if not response:
         return jsonify({'error': 'Failed to upload file to YouTube'}), 500
 
-    # Obtener el ID del video de la respuesta de YouTube
-    video_id = response.get('id')
-    video_url = "https://www.youtube.com/watch?v={}".format(video_id)
+    # Obtener el enlace público
+    file_data = drive_service.files().get(fileId=file_id, fields='webViewLink').execute()
+    
+    return jsonify({'url': file_data['webViewLink']})
 
-    return jsonify({'url': video_url})
+@app.route('/list_drive_folders', methods=['GET'])
+def list_drive_folders():
+    if 'credentials' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
 
+    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
+    drive_service = build('drive', 'v3', credentials=credentials)
+
+    folders = []
+    page_token = None
+    try:
+        while True:
+            response = drive_service.files().list(
+                q="mimeType='application/vnd.google-apps.folder' and trashed=false",
+                spaces='drive',
+                fields='nextPageToken, files(id, name)',
+                pageToken=page_token
+            ).execute()
+            
+            for file in response.get('files', []):
+                folders.append({'id': file.get('id'), 'name': file.get('name')})
+            
+            page_token = response.get('nextPageToken', None);
+            if page_token is None:
+                break
+        
+        # Ordenar las carpetas alfabéticamente por nombre
+        folders.sort(key=lambda x: x['name'].lower())
+        
+        return jsonify(folders)
+
+    except Exception as e:
+        print("Error listing Drive folders: {}".format(e))
+        return jsonify({'error': 'Failed to list folders from Google Drive'}), 500
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -230,18 +263,6 @@ def index():
             'intro_title': request.form.get('intro_title'),
             'intro_p1': request.form.get('intro_p1'),
             'intro_p2': request.form.get('intro_p2'),
-            'section1_img_src': request.form.get('section1_img_src'),
-            'section1_img_alt': request.form.get('section1_img_alt'),
-            'section1_title': request.form.get('section1_title'),
-            'section1_p': request.form.get('section1_p'),
-            'section1_button_link': request.form.get('section1_button_link'),
-            'section1_button_text': request.form.get('section1_button_text'),
-            'section2_img_src': request.form.get('section2_img_src'),
-            'section2_img_alt': request.form.get('section2_img_alt'),
-            'section2_title': request.form.get('section2_title'),
-            'section2_p': request.form.get('section2_p'),
-            'section2_button_link': request.form.get('section2_button_link'),
-            'section2_button_text': request.form.get('section2_button_text'),
             'video_title': request.form.get('video_title'),
             'video_p': request.form.get('video_p'),
             'video_link': request.form.get('video_link'),
@@ -257,19 +278,27 @@ def index():
             'text_color': request.form.get('text_color'),
             'font_family': request.form.get('font_family'),
             'title_font_size': request.form.get('title_font_size'),
+            'sections': []
         }
 
-        # Guardar estilos en la sesión
-        session['styles'] = {
-            'bg_type': context['bg_type'],
-            'bg_color': context['bg_color'],
-            'bg_color_1': context['bg_color_1'],
-            'bg_color_2': context['bg_color_2'],
-            'title_color': context['title_color'],
-            'text_color': context['text_color'],
-            'font_family': context['font_family'],
-            'title_font_size': context['title_font_size'],
-        }
+        # Recoger secciones dinámicamente
+        sections_data = {}
+        for key, value in request.form.items():
+            if key.startswith('section'):
+                parts = key.split('_')
+                section_num = parts[0].replace('section', '')
+                field_name = '_'.join(parts[1:])
+                
+                if section_num not in sections_data:
+                    sections_data[section_num] = {'id': section_num}
+                sections_data[section_num][field_name] = value
+        
+        # Convertir el diccionario de secciones a una lista ordenada
+        sorted_section_nums = sorted(sections_data.keys(), key=int)
+        context['sections'] = [sections_data[num] for num in sorted_section_nums]
+
+        # Guardar todo el contexto en la sesión para repoblar el formulario
+        session['form_data'] = context
 
         # Renderizar la plantilla de la newsletter a una variable
         newsletter_html = render_template('template.html', **context)
@@ -281,10 +310,10 @@ def index():
         # Devolver la página de resultados con el código de la newsletter
         return render_template('result.html', newsletter_html=newsletter_html)
     
-    # Si es GET, mostrar el formulario con los estilos de la sesión si existen
-    styles = session.get('styles', {})
+    # Si es GET, mostrar el formulario con los datos de la sesión si existen
+    form_data = session.get('form_data', {})
     credentials_exist = 'credentials' in session
-    return render_template('index.html', credentials_exist=credentials_exist, **styles)
+    return render_template('index.html', credentials_exist=credentials_exist, **form_data)
 
 if __name__ == '__main__':
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'

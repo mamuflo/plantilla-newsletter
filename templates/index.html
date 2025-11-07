@@ -157,45 +157,49 @@
                 
                 <h4>Configuración de Google Drive</h4>
                 <div class="resource-item">
-                    <label for="drive_folder_name" style="flex-basis: 200px;">Carpeta en Drive:</label>
-                    <input type="text" id="drive_folder_name" placeholder="Ej: Newsletter_Imagenes" style="margin-bottom: 0;">
-                    <button type="button" class="upload-button" onclick="getOrCreateFolder()">Crear/Usar Carpeta</button>
+                    <label for="drive_folder_select" style="flex-basis: 200px;">Seleccionar Carpeta Existente:</label>
+                    <select id="drive_folder_select" style="flex-grow: 1; padding: 10px; margin-bottom: 0;"></select>
+                    <button type="button" class="upload-button" onclick="fetchDriveFolders()">Refrescar Lista</button>
+                </div>
+                <div class="resource-item">
+                    <label for="drive_folder_name" style="flex-basis: 200px;">O Crear Carpeta Nueva:</label>
+                    <input type="text" id="drive_folder_name" placeholder="Ej: Newsletter_Imagenes_2024" style="margin-bottom: 0;">
+                    <button type="button" class="upload-button" onclick="getOrCreateFolder()">Crear y Usar</button>
                 </div>
                 <input type="hidden" id="drive_folder_id">
                 <hr style="margin: 2em 0;">
 
                 <h4>Imágenes (subir a Google Drive)</h4>
+                <p>Selecciona todas las imágenes que quieras subir. Después, pulsa el botón de abajo para subirlas todas a la vez.</p>
                 <div class="resource-item">
                     <label for="header_logo_src_upload" style="flex-basis: 200px;">Logo (Cabecera):</label>
-                    <input type="file" id="header_logo_src_upload" accept="image/*">
-                    <button type="button" class="upload-button" onclick="uploadFile('header_logo_src_upload', 'header_logo_src', 'image')">Subir</button>
+                    <input type="file" id="header_logo_src_upload" accept="image/*" data-target-input="header_logo_src">
                 </div>
                 <div class="resource-item">
                     <label for="hero_src_upload" style="flex-basis: 200px;">Banner Principal:</label>
-                    <input type="file" id="hero_src_upload" accept="image/*">
-                    <button type="button" class="upload-button" onclick="uploadFile('hero_src_upload', 'hero_src', 'image')">Subir</button>
+                    <input type="file" id="hero_src_upload" accept="image/*" data-target-input="hero_src">
                 </div>
                 <div class="resource-item">
                     <label for="section1_img_src_upload" style="flex-basis: 200px;">Imagen (Sección 1):</label>
-                    <input type="file" id="section1_img_src_upload" accept="image/*">
-                    <button type="button" class="upload-button" onclick="uploadFile('section1_img_src_upload', 'section1_img_src', 'image')">Subir</button>
+                    <input type="file" id="section1_img_src_upload" accept="image/*" data-target-input="section1_img_src">
                 </div>
                 <div class="resource-item">
                     <label for="section2_img_src_upload" style="flex-basis: 200px;">Imagen (Sección 2):</label>
-                    <input type="file" id="section2_img_src_upload" accept="image/*">
-                    <button type="button" class="upload-button" onclick="uploadFile('section2_img_src_upload', 'section2_img_src', 'image')">Subir</button>
+                    <input type="file" id="section2_img_src_upload" accept="image/*" data-target-input="section2_img_src">
                 </div>
                  <div class="resource-item">
                     <label for="video_thumbnail_src_upload" style="flex-basis: 200px;">Miniatura Vídeo:</label>
-                    <input type="file" id="video_thumbnail_src_upload" accept="image/*">
-                    <button type="button" class="upload-button" onclick="uploadFile('video_thumbnail_src_upload', 'video_thumbnail_src', 'image')">Subir</button>
+                    <input type="file" id="video_thumbnail_src_upload" accept="image/*" data-target-input="video_thumbnail_src">
+                </div>
+                <div class="button-container" style="margin: 1em 0;">
+                    <button type="button" class="upload-button" onclick="uploadAllImages()">Subir Todas las Imágenes Seleccionadas</button>
                 </div>
 
                 <h4>Vídeo (subir a YouTube)</h4>
                 <div class="resource-item">
                     <label for="video_link_upload" style="flex-basis: 200px;">Vídeo Principal:</label>
                     <input type="file" id="video_link_upload" accept="video/*">
-                    <button type="button" class="upload-button" onclick="uploadFile('video_link_upload', 'video_link', 'video')">Subir</button>
+                    <button type="button" class="upload-button" onclick="uploadVideo('video_link_upload', 'video_link')">Subir Vídeo</button>
                 </div>
             </div>
         </fieldset>
@@ -203,94 +207,102 @@
         <fieldset>
             <legend>1. Cabecera y Banner</legend>
             <label for="title">Título de la Página (pestaña del navegador):</label>
-            <input type="text" id="title" name="title" value="Newsletter CITED Cantabria">
+            <input type="text" id="title" name="title" value="{{ title | default('Newsletter CITED Cantabria') }}">
 
             <label for="header_logo_link">Enlace del Logo (Cabecera):</label>
-            <input type="text" id="header_logo_link" name="header_logo_link" value="https://educantabria.es/web/cited">
+            <input type="text" id="header_logo_link" name="header_logo_link" value="{{ header_logo_link | default('https://educantabria.es/web/cited') }}">
 
             <label for="header_logo_src">URL de la Imagen del Logo (Cabecera):</label>
-            <input type="text" id="header_logo_src" name="header_logo_src" value="https://www.educantabria.es/documents/21790824/0/Logo+Cited_Aula+del+futuro+%281%29.png">
+            <input type="text" id="header_logo_src" name="header_logo_src" value="{{ header_logo_src | default('https://www.educantabria.es/documents/21790824/0/Logo+Cited_Aula+del+futuro+%281%29.png') }}">
 
             <label for="hero_link">Enlace del Banner Principal:</label>
-            <input type="text" id="hero_link" name="hero_link" value="https://educantabria.es/web/cited">
+            <input type="text" id="hero_link" name="hero_link" value="{{ hero_link | default('https://educantabria.es/web/cited') }}">
 
             <label for="hero_src">URL de la Imagen del Banner Principal:</label>
-            <input type="text" id="hero_src" name="hero_src" value="https://www.educantabria.es/documents/21790824/21790904/artificial-intelligence-3706562_1920.jpg">
+            <input type="text" id="hero_src" name="hero_src" value="{{ hero_src | default('https://www.educantabria.es/documents/21790824/21790904/artificial-intelligence-3706562_1920.jpg') }}">
 
             <label for="hero_alt">Texto Alternativo del Banner Principal:</label>
-            <input type="text" id="hero_alt" name="hero_alt" value="Innovación y Formación CITED">
+            <input type="text" id="hero_alt" name="hero_alt" value="{{ hero_alt | default('Innovación y Formación CITED') }}">
         </fieldset>
 
         <fieldset>
             <legend>2. Contenido Introductorio</legend>
             <label for="intro_title">Título Principal:</label>
-            <input type="text" id="intro_title" name="intro_title" value="Descubre el CITED: Tu Futuro Empieza Aquí">
+            <input type="text" id="intro_title" name="intro_title" value="{{ intro_title | default('Descubre el CITED: Tu Futuro Empieza Aquí') }}">
 
             <label for="intro_p1">Párrafo de Introducción 1 (acepta HTML como &lt;strong&gt;):</label>
-            <textarea id="intro_p1" name="intro_p1">El &lt;strong&gt;Centro de Innovación y Tecnología Educativa de Cantabria (CITED)&lt;/strong&gt; es tu punto de referencia para la transformación digital en la educación.</textarea>
+            <textarea id="intro_p1" name="intro_p1">{{ intro_p1 | default('El &lt;strong&gt;Centro de Innovación y Tecnología Educativa de Cantabria (CITED)&lt;/strong&gt; es tu punto de referencia para la transformación digital en la educación.') }}</textarea>
 
             <label for="intro_p2">Párrafo de Introducción 2 (acepta HTML como &lt;strong&gt;):</label>
-            <textarea id="intro_p2" name="intro_p2">Explora nuestras nuevas líneas de formación, programas, recursos y proyectos diseñados para &lt;strong&gt;docentes&lt;/strong&gt; que buscan innovar en el aula.</textarea>
+            <textarea id="intro_p2" name="intro_p2">{{ intro_p2 | default('Explora nuestras nuevas líneas de formación, programas, recursos y proyectos diseñados para &lt;strong&gt;docentes&lt;/strong&gt; que buscan innovar en el aula.') }}</textarea>
         </fieldset>
 
         <fieldset>
-            <legend>3. Sección 1 (Formación)</legend>
+            <legend>Sección 1</legend>
             <label for="section1_img_src">URL de la Imagen (Sección 1):</label>
-            <input type="text" id="section1_img_src" name="section1_img_src" value="https://www.educantabria.es/documents/21790824/21790904/formacion.png">
+            <input type="text" id="section1_img_src" name="section1_img_src" value="{{ section1_img_src | default('https://www.educantabria.es/documents/21790824/21790904/formacion.png') }}">
 
             <label for="section1_img_alt">Texto Alternativo de la Imagen (Sección 1):</label>
-            <input type="text" id="section1_img_alt" name="section1_img_alt" value="Formación para Docentes">
+            <input type="text" id="section1_img_alt" name="section1_img_alt" value="{{ section1_img_alt | default('Formación para Docentes') }}">
 
             <label for="section1_title">Título (Sección 1):</label>
-            <input type="text" id="section1_title" name="section1_title" value="Formación del Profesorado">
+            <input type="text" id="section1_title" name="section1_title" value="{{ section1_title | default('Formación del Profesorado') }}">
 
             <label for="section1_p">Párrafo (Sección 1):</label>
-            <textarea id="section1_p" name="section1_p">Actualiza tus competencias digitales, descubre metodologías activas y lidera el cambio en tu aula. Ofrecemos cursos prácticos, píldoras formativas y asesoramiento en proyectos de innovación.</textarea>
+            <textarea id="section1_p" name="section1_p">{{ section1_p | default('Actualiza tus competencias digitales, descubre metodologías activas y lidera el cambio en tu aula. Ofrecemos cursos prácticos, píldoras formativas y asesoramiento en proyectos de innovación.') }}</textarea>
 
             <label for="section1_button_link">Enlace del Botón (Sección 1):</label>
-            <input type="text" id="section1_button_link" name="section1_button_link" value="https://aulacited.educantabria.es">
+            <input type="text" id="section1_button_link" name="section1_button_link" value="{{ section1_button_link | default('https://aulacited.educantabria.es') }}">
 
             <label for="section1_button_text">Texto del Botón (Sección 1):</label>
-            <input type="text" id="section1_button_text" name="section1_button_text" value="Ver Cursos para Docentes">
+            <input type="text" id="section1_button_text" name="section1_button_text" value="{{ section1_button_text | default('Ver Cursos para Docentes') }}">
         </fieldset>
 
         <fieldset>
-            <legend>4. Sección 2 (Programas)</legend>
+            <legend>Sección 2</legend>
             <label for="section2_img_src">URL de la Imagen (Sección 2):</label>
-            <input type="text" id="section2_img_src" name="section2_img_src" value="https://www.educantabria.es/documents/21790824/21790904/programas.png">
+            <input type="text" id="section2_img_src" name="section2_img_src" value="{{ section2_img_src | default('https://www.educantabria.es/documents/21790824/21790904/programas.png') }}">
 
             <label for="section2_img_alt">Texto Alternativo de la Imagen (Sección 2):</label>
-            <input type="text" id="section2_img_alt" name="section2_img_alt" value="Programas CITED">
+            <input type="text" id="section2_img_alt" name="section2_img_alt" value="{{ section2_img_alt | default('Programas CITED') }}">
 
             <label for="section2_title">Título (Sección 2):</label>
-            <input type="text" id="section2_title" name="section2_title" value="Nuestros Programas">
+            <input type="text" id="section2_title" name="section2_title" value="{{ section2_title | default('Nuestros Programas') }}">
 
             <label for="section2_p">Párrafo (Sección 2):</label>
-            <textarea id="section2_p" name="section2_p">Descubre los programas de innovación que impulsamos desde el CITED, diseñados para fomentar la integración de la tecnología y las nuevas metodologías en los centros educativos de Cantabria.</textarea>
+            <textarea id="section2_p" name="section2_p">{{ section2_p | default('Descubre los programas de innovación que impulsamos desde el CITED, diseñados para fomentar la integración de la tecnología y las nuevas metodologías en los centros educativos de Cantabria.') }}</textarea>
 
             <label for="section2_button_link">Enlace del Botón (Sección 2):</label>
-            <input type="text" id="section2_button_link" name="section2_button_link" value="https://www.educantabria.es/web/cited/programas1">
+            <input type="text" id="section2_button_link" name="section2_button_link" value="{{ section2_button_link | default('https://www.educantabria.es/web/cited/programas1') }}">
 
             <label for="section2_button_text">Texto del Botón (Sección 2):</label>
-            <input type="text" id="section2_button_text" name="section2_button_text" value="Ver Todos los Programas">
+            <input type="text" id="section2_button_text" name="section2_button_text" value="{{ section2_button_text | default('Ver Todos los Programas') }}">
         </fieldset>
 
+        <div id="dynamic-sections-container">
+            <!-- Las nuevas secciones se insertarán aquí -->
+        </div>
+
+        <div class="button-container" style="margin-bottom: 2em;">
+            <button type="button" class="upload-button" onclick="addSection()">Añadir Sección</button>
+        </div>
+
         <fieldset>
-            <legend>5. Sección de Vídeo</legend>
+            <legend>Sección de Vídeo</legend>
             <label for="video_title">Título del Vídeo:</label>
-            <input type="text" id="video_title" name="video_title" value="Conoce el CITED en 1 Minuto">
+            <input type="text" id="video_title" name="video_title" value="{{ video_title | default('Conoce el CITED en 1 Minuto') }}">
 
             <label for="video_p">Párrafo del Vídeo:</label>
-            <textarea id="video_p" name="video_p">Descubre nuestras instalaciones y todo lo que podemos ofrecerte en este breve video.</textarea>
+            <textarea id="video_p" name="video_p">{{ video_p | default('Descubre nuestras instalaciones y todo lo que podemos ofrecerte en este breve video.') }}</textarea>
 
             <label for="video_link">Enlace al Archivo de Vídeo o Página:</label>
-            <input type="text" id="video_link" name="video_link" value="https://www.educantabria.es/documents/21790824/21790889/Bienvenid%40s+al+CITED.mp4">
+            <input type="text" id="video_link" name="video_link" value="{{ video_link | default('https://www.educantabria.es/documents/21790824/21790889/Bienvenid%40s+al+CITED.mp4') }}">
 
             <label for="video_thumbnail_src">URL de la Imagen Miniatura del Vídeo:</label>
-            <input type="text" id="video_thumbnail_src" name="video_thumbnail_src" value="https://www.educantabria.es/documents/21790824/21790904/video.png">
+            <input type="text" id="video_thumbnail_src" name="video_thumbnail_src" value="{{ video_thumbnail_src | default('https://www.educantabria.es/documents/21790824/21790904/video.png') }}">
 
             <label for="video_thumbnail_alt">Texto Alternativo de la Miniatura:</label>
-            <input type="text" id="video_thumbnail_alt" name="video_thumbnail_alt" value="Ver video sobre el CITED">
+            <input type="text" id="video_thumbnail_alt" name="video_thumbnail_alt" value="{{ video_thumbnail_alt | default('Ver video sobre el CITED') }}">
         </fieldset>
 
         <fieldset>
@@ -344,10 +356,10 @@
         <fieldset>
             <legend>8. Pie de Página</legend>
             <label for="footer_web_link">Enlace Web del Pie de Página:</label>
-            <input type="text" id="footer_web_link" name="footer_web_link" value="https://educantabria.es/web/cited">
+            <input type="text" id="footer_web_link" name="footer_web_link" value="{{ footer_web_link | default('https://educantabria.es/web/cited') }}">
 
             <label for="footer_web_text">Texto del Enlace Web del Pie de Página:</label>
-            <input type="text" id="footer_web_text" name="footer_web_text" value="educantabria.es/web/cited">
+            <input type="text" id="footer_web_text" name="footer_web_text" value="{{ footer_web_text | default('educantabria.es/web/cited') }}">
         </fieldset>
 
         <div class="button-container">
@@ -369,10 +381,58 @@
             }
         });
 
+        document.addEventListener('DOMContentLoaded', function() {
+            // Si el usuario está conectado, carga las carpetas de Drive
+            if (document.getElementById('upload-section').style.display !== 'none') {
+                fetchDriveFolders();
+            }
+
+            // Event listener para el dropdown de carpetas
+            document.getElementById('drive_folder_select').addEventListener('change', function() {
+                document.getElementById('drive_folder_id').value = this.value;
+            });
+        });
+
+        function fetchDriveFolders() {
+            const select = document.getElementById('drive_folder_select');
+            const currentFolderId = document.getElementById('drive_folder_id').value;
+            select.innerHTML = '<option>Cargando carpetas...</option>'; // Placeholder
+
+            fetch('/list_drive_folders')
+                .then(response => {
+                    if (!response.ok) throw new Error('No se pudo cargar la lista de carpetas.');
+                    return response.json();
+                })
+                .then(folders => {
+                    select.innerHTML = ''; // Limpiar placeholder
+                    if (folders.length === 0) {
+                        select.innerHTML = '<option value="">No se encontraron carpetas</option>';
+                        return;
+                    }
+                    folders.forEach(folder => {
+                        const option = document.createElement('option');
+                        option.value = folder.id;
+                        option.textContent = folder.name;
+                        if (folder.id === currentFolderId) {
+                            option.selected = true;
+                        }
+                        select.appendChild(option);
+                    });
+                    // Asegurarse de que el hidden input tenga el valor correcto al cargar
+                    if (select.value) {
+                         document.getElementById('drive_folder_id').value = select.value;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching folders:', error);
+                    select.innerHTML = '<option value="">Error al cargar</option>';
+                });
+        }
+
         function getOrCreateFolder() {
             const folderName = document.getElementById('drive_folder_name').value;
             if (!folderName) {
-                alert("Por favor, introduce un nombre para la carpeta.");
+                alert("Por favor, introduce un nombre para la carpeta nueva.");
                 return;
             }
 
@@ -388,6 +448,8 @@
                 if (data.folderId) {
                     document.getElementById('drive_folder_id').value = data.folderId;
                     alert(`Carpeta '${folderName}' lista para usar.`);
+                    // Refrescar la lista y seleccionar la nueva carpeta
+                    fetchDriveFolders();
                 } else {
                     throw new Error(data.error || 'No se pudo obtener el ID de la carpeta.');
                 }
@@ -398,25 +460,164 @@
             });
         }
 
-        function uploadFile(fileInputId, targetInputId, type) {
+        let sectionCounter = 3; // Empezamos desde 3 porque 1 y 2 ya existen
+
+        function addSection() {
+            const container = document.getElementById('dynamic-sections-container');
+            const sectionId = sectionCounter;
+
+            const newSection = document.createElement('fieldset');
+            newSection.id = `section-${sectionId}`;
+            newSection.innerHTML = `
+                <legend>Sección ${sectionId}</legend>
+                <button type="button" class="upload-button" style="float: right; margin-top: -4em;" onclick="removeSection(${sectionId})">Eliminar Sección</button>
+                
+                <div class="resource-item">
+                    <label for="section${sectionId}_img_src_upload" style="flex-basis: 200px;">Imagen (Sección ${sectionId}):</label>
+                    <input type="file" id="section${sectionId}_img_src_upload" accept="image/*" data-target-input="section${sectionId}_img_src">
+                </div>
+
+                <label for="section${sectionId}_img_src">URL de la Imagen (Sección ${sectionId}):</label>
+                <input type="text" id="section${sectionId}_img_src" name="section${sectionId}_img_src">
+
+                <label for="section${sectionId}_img_alt">Texto Alternativo de la Imagen (Sección ${sectionId}):</label>
+                <input type="text" id="section${sectionId}_img_alt" name="section${sectionId}_img_alt">
+
+                <label for="section${sectionId}_title">Título (Sección ${sectionId}):</label>
+                <input type="text" id="section${sectionId}_title" name="section${sectionId}_title">
+
+                <label for="section${sectionId}_p">Párrafo (Sección ${sectionId}):</label>
+                <textarea id="section${sectionId}_p" name="section${sectionId}_p"></textarea>
+
+                <label for="section${sectionId}_button_link">Enlace del Botón (Sección ${sectionId}):</label>
+                <input type="text" id="section${sectionId}_button_link" name="section${sectionId}_button_link">
+
+                <label for="section${sectionId}_button_text">Texto del Botón (Sección ${sectionId}):</label>
+                <input type="text" id="section${sectionId}_button_text" name="section${sectionId}_button_text">
+            `;
+
+            container.appendChild(newSection);
+            
+            // Inicializar TinyMCE en el nuevo textarea
+            tinymce.init({
+                selector: `#section${sectionId}_p`,
+                plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+                toolbar_mode: 'floating',
+            });
+
+            sectionCounter++;
+        }
+
+        function removeSection(sectionId) {
+            const section = document.getElementById(`section-${sectionId}`);
+            if (section) {
+                // Destruir la instancia de TinyMCE antes de eliminar el elemento
+                const editor = tinymce.get(`section${sectionId}_p`);
+                if (editor) {
+                    editor.destroy();
+                }
+                section.remove();
+            }
+        }
+
+            });
+        }
+
+        async function uploadAllImages() {
+            const uploadButton = document.querySelector('button[onclick="uploadAllImages()"]');
+            const originalButtonText = uploadButton.textContent;
+            uploadButton.textContent = "Subiendo...";
+            uploadButton.disabled = true;
+
+            const folderId = document.getElementById('drive_folder_id').value;
+            if (!folderId) {
+                alert("Por favor, primero crea o verifica una carpeta de Google Drive.");
+                uploadButton.textContent = originalButtonText;
+                uploadButton.disabled = false;
+                return;
+            }
+
+            const fileInputs = document.querySelectorAll('input[type="file"][data-target-input]');
+            const filesToUpload = Array.from(fileInputs).filter(input => input.files.length > 0);
+
+            if (filesToUpload.length === 0) {
+                alert("No has seleccionado ninguna imagen para subir.");
+                uploadButton.textContent = originalButtonText;
+                uploadButton.disabled = false;
+                return;
+            }
+
+            const uploadPromises = filesToUpload.map(fileInput => {
+                const file = fileInput.files[0];
+                const targetInputId = fileInput.getAttribute('data-target-input');
+                return _uploadSingleImage(file, folderId, targetInputId);
+            });
+
+            try {
+                const results = await Promise.all(uploadPromises);
+                const successfulUploads = results.filter(r => r.success).length;
+                const failedUploads = results.length - successfulUploads;
+
+                let message = `${successfulUploads} de ${results.length} imágenes subidas con éxito.`;
+                if (failedUploads > 0) {
+                    message += `\n${failedUploads} subidas fallaron. Revisa la consola para más detalles.`;
+                };
+                alert(message);
+
+            } catch (error) {
+                console.error('Error general durante la subida de imágenes:', error);
+                alert('Ocurrió un error inesperado al subir las imágenes.');
+            } finally {
+                uploadButton.textContent = originalButtonText;
+                uploadButton.disabled = false;
+            }
+        }
+
+        function _uploadSingleImage(file, folderId, targetInputId) {
+            return new Promise((resolve) => {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('folderId', folderId);
+
+                const targetInput = document.getElementById(targetInputId);
+                const originalValue = targetInput.value;
+
+                fetch('/upload_image', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Error en subida de ${file.name}. Código: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.url) {
+                        targetInput.value = data.url;
+                        resolve({ success: true, file: file.name });
+                    } else {
+                        throw new Error(data.error || `No se recibió URL para ${file.name}.`);
+                    }
+                })
+                .catch(error => {
+                    console.error(`Error subiendo ${file.name}:`, error);
+                    targetInput.value = originalValue; // Revertir
+                    resolve({ success: false, file: file.name, error: error.message });
+                });
+            });
+        }
+
+        function uploadVideo(fileInputId, targetInputId) {
             const fileInput = document.getElementById(fileInputId);
             const file = fileInput.files[0];
             if (!file) {
-                alert("Por favor, selecciona un archivo primero.");
+                alert("Por favor, selecciona un archivo de vídeo primero.");
                 return;
             }
 
             const formData = new FormData();
             formData.append('file', file);
-
-            if (type === 'image') {
-                const folderId = document.getElementById('drive_folder_id').value;
-                if (!folderId) {
-                    alert("Por favor, primero crea o verifica una carpeta de Google Drive.");
-                    return;
-                }
-                formData.append('folderId', folderId);
-            }
 
             const targetInput = document.getElementById(targetInputId);
             const originalValue = targetInput.value;
@@ -424,9 +625,7 @@
             uploadButton.textContent = "Subiendo...";
             uploadButton.disabled = true;
 
-            const endpoint = type === 'image' ? '/upload_image' : '/upload_video';
-
-            fetch(endpoint, {
+            fetch('/upload_video', {
                 method: 'POST',
                 body: formData
             })
@@ -439,18 +638,18 @@
             .then(data => {
                 if (data.url) {
                     targetInput.value = data.url;
-                    alert("¡Subida completada! La URL ha sido actualizada.");
+                    alert("¡Subida de vídeo completada! La URL ha sido actualizada.");
                 } else {
                     throw new Error(data.error || 'No se recibió una URL.');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert("Error en la subida: " + error.message);
-                targetInput.value = originalValue; // Revertir al valor original si hay error
+                alert("Error en la subida del vídeo: " + error.message);
+                targetInput.value = originalValue;
             })
             .finally(() => {
-                uploadButton.textContent = "Subir";
+                uploadButton.textContent = "Subir Vídeo";
                 uploadButton.disabled = false;
             });
         }
