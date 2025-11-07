@@ -2,6 +2,7 @@
 import os
 import json
 import io
+import tempfile
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 from pynliner import Pynliner
 import google.oauth2.credentials
@@ -119,21 +120,28 @@ def upload_image():
     file = request.files['file']
     folder_id = request.form.get('folderId')
 
-    if not file:
-        return jsonify({'error': 'No file provided'}), 400
-
-    file_content = file.stream.read()
-
-    file_metadata = {
-        'name': file.filename,
-        'parents': [folder_id] if folder_id else []
-    }
-
-    media = MediaFileUpload(io.BytesIO(file_content), mimetype=file.mimetype, resumable=True)
+        if not file:
+            return jsonify({'error': 'No file provided'}), 400
     
-    request_drive = drive_service.files().create(media_body=media, body=file_metadata, fields='id, webViewLink')
-    response = request_drive.execute()
+        # Create a temporary file and write the content to it
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            file.stream.seek(0) # Ensure stream is at the beginning
+            temp_file.write(file.stream.read())
+            temp_file_path = temp_file.name
     
+        try:
+            file_metadata = {
+                'name': file.filename,
+                'parents': [folder_id] if folder_id else []
+            }
+    
+            media = MediaFileUpload(temp_file_path, mimetype=file.mimetype, resumable=True)
+            
+            request_drive = drive_service.files().create(media_body=media, body=file_metadata, fields='id, webViewLink')
+            response = request_drive.execute()
+        finally:
+            # Clean up the temporary file
+            os.remove(temp_file_path)    
     # Hacer el archivo público
     file_id = response.get('id')
     permission = {'type': 'anyone', 'role': 'reader'}
@@ -153,32 +161,40 @@ def upload_video():
     youtube_service = build(API_SERVICE_NAME, API_VERSION, credentials=credentials)
 
     file = request.files['file']
-    if not file:
-        return jsonify({'error': 'No file provided'}), 400
-
-    file_content = file.stream.read()
-
-    body = {
-        'snippet': {
-            'title': 'Video subido desde la App de Newsletter',
-            'description': 'Este es un video subido a través de la aplicación de generación de newsletters.',
-            'tags': ['newsletter', 'video'],
-            'categoryId': '22' 
-        },
-        'status': {
-            'privacyStatus': 'public' 
-        }
-    }
-
-    media = MediaFileUpload(io.BytesIO(file_content), chunksize=-1, resumable=True)
+        if not file:
+            return jsonify({'error': 'No file provided'}), 400
     
-    request_youtube = youtube_service.videos().insert(
-        part=','.join(body.keys()),
-        body=body,
-        media_body=media
-    )
+        # Create a temporary file and write the content to it
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            file.stream.seek(0) # Ensure stream is at the beginning
+            temp_file.write(file.stream.read())
+            temp_file_path = temp_file.name
     
-    response = request_youtube.execute()
+        try:
+            body = {
+                'snippet': {
+                    'title': 'Video subido desde la App de Newsletter',
+                    'description': 'Este es un video subido a través de la aplicación de generación de newsletters.',
+                    'tags': ['newsletter', 'video'],
+                    'categoryId': '22' 
+                },
+                'status': {
+                    'privacyStatus': 'public' 
+                }
+            }
+    
+            media = MediaFileUpload(temp_file_path, chunksize=-1, resumable=True)
+            
+            request_youtube = youtube_service.videos().insert(
+                part=','.join(body.keys()),
+                body=body,
+                media_body=media
+            )
+            
+            response = request_youtube.execute()
+        finally:
+            # Clean up the temporary file
+            os.remove(temp_file_path)
     # Obtener el ID del video de la respuesta de YouTube
     video_id = response.get('id')
     video_url = "https://www.youtube.com/watch?v={}".format(video_id)
