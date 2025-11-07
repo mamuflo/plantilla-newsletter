@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import json
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 from pynliner import Pynliner
 import google.oauth2.credentials
@@ -21,8 +22,21 @@ API_VERSION = 'v3'
 
 @app.route('/authorize')
 def authorize():
-    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        CLIENT_SECRETS_FILE, scopes=SCOPES)
+    if os.path.exists(CLIENT_SECRETS_FILE):
+        flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+            CLIENT_SECRETS_FILE, scopes=SCOPES)
+    else:
+        client_config = {
+            "web": {
+                "client_id": os.environ.get("GOOGLE_CLIENT_ID"),
+                "client_secret": os.environ.get("GOOGLE_CLIENT_SECRET"),
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+                "redirect_uris": [url_for('oauth2callback', _external=True)]
+            }
+        }
+        flow = google_auth_oauthlib.flow.Flow.from_client_config(
+            client_config, scopes=SCOPES)
     flow.redirect_uri = url_for('oauth2callback', _external=True)
     authorization_url, state = flow.authorization_url(
         access_type='offline',
@@ -33,8 +47,21 @@ def authorize():
 @app.route('/oauth2callback')
 def oauth2callback():
     state = session['state']
-    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        CLIENT_SECRETS_FILE, scopes=SCOPES, state=state)
+    if os.path.exists(CLIENT_SECRETS_FILE):
+        flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+            CLIENT_SECRETS_FILE, scopes=SCOPES, state=state)
+    else:
+        client_config = {
+            "web": {
+                "client_id": os.environ.get("GOOGLE_CLIENT_ID"),
+                "client_secret": os.environ.get("GOOGLE_CLIENT_SECRET"),
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+                "redirect_uris": [url_for('oauth2callback', _external=True)]
+            }
+        }
+        flow = google_auth_oauthlib.flow.Flow.from_client_config(
+            client_config, scopes=SCOPES, state=state)
     flow.redirect_uri = url_for('oauth2callback', _external=True)
     authorization_response = request.url
     flow.fetch_token(authorization_response=authorization_response)
