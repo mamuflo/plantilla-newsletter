@@ -50,6 +50,7 @@ def credentials_to_dict(credentials):
             'client_secret': credentials.client_secret,
             'scopes': credentials.scopes}
 
+@app.route('/get_or_create_folder', methods=['POST'])
 def get_or_create_folder():
     if 'credentials' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
@@ -79,6 +80,7 @@ def get_or_create_folder():
         folder = drive_service.files().create(body=file_metadata, fields='id').execute()
         return jsonify({'folderId': folder.get('id')})
 
+@app.route('/upload_image', methods=['POST'])
 def upload_image():
     if 'credentials' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
@@ -112,6 +114,7 @@ def upload_image():
     
     return jsonify({'url': file_data['webViewLink']})
 
+@app.route('/upload_video', methods=['POST'])
 def upload_video():
     if 'credentials' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
