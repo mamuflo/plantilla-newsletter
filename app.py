@@ -126,7 +126,7 @@ def upload_image():
         'parents': [folder_id] if folder_id else []
     }
 
-    media = MediaFileUpload(file, mimetype=file.mimetype, resumable=True)
+    media = MediaFileUpload(file.stream, mimetype=file.mimetype, resumable=True)
     
     request_drive = drive_service.files().create(media_body=media, body=file_metadata, fields='id, webViewLink')
     response = request_drive.execute()
@@ -165,7 +165,7 @@ def upload_video():
         }
     }
 
-    media = MediaFileUpload(file, chunksize=-1, resumable=True)
+    media = MediaFileUpload(file.stream, chunksize=-1, resumable=True)
     
     request_youtube = youtube_service.videos().insert(
         part=','.join(body.keys()),
