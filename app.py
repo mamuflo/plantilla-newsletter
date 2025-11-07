@@ -120,8 +120,8 @@ def upload_image():
     file = request.files['file']
     folder_id = request.form.get('folderId')
 
-        if not file:
-            return jsonify({'error': 'No file provided'}), 400
+    if not file:
+        return jsonify({'error': 'No file provided'}), 400
     
         # Create a temporary file and write the content to it
         with tempfile.NamedTemporaryFile(delete=False) as temp_file:
@@ -161,40 +161,40 @@ def upload_video():
     youtube_service = build(API_SERVICE_NAME, API_VERSION, credentials=credentials)
 
     file = request.files['file']
-        if not file:
-            return jsonify({'error': 'No file provided'}), 400
+    if not file:
+        return jsonify({'error': 'No file provided'}), 400
     
-        # Create a temporary file and write the content to it
-        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-            file.stream.seek(0) # Ensure stream is at the beginning
-            temp_file.write(file.stream.read())
-            temp_file_path = temp_file.name
-    
-        try:
-            body = {
-                'snippet': {
-                    'title': 'Video subido desde la App de Newsletter',
-                    'description': 'Este es un video subido a través de la aplicación de generación de newsletters.',
-                    'tags': ['newsletter', 'video'],
-                    'categoryId': '22' 
-                },
-                'status': {
-                    'privacyStatus': 'public' 
-                }
+    # Create a temporary file and write the content to it
+    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        file.stream.seek(0) # Ensure stream is at the beginning
+        temp_file.write(file.stream.read())
+        temp_file_path = temp_file.name
+
+    try:
+        body = {
+            'snippet': {
+                'title': 'Video subido desde la App de Newsletter',
+                'description': 'Este es un video subido a través de la aplicación de generación de newsletters.',
+                'tags': ['newsletter', 'video'],
+                'categoryId': '22' 
+            },
+            'status': {
+                'privacyStatus': 'public' 
             }
-    
-            media = MediaFileUpload(temp_file_path, chunksize=-1, resumable=True)
-            
-            request_youtube = youtube_service.videos().insert(
-                part=','.join(body.keys()),
-                body=body,
-                media_body=media
-            )
-            
-            response = request_youtube.execute()
-        finally:
-            # Clean up the temporary file
-            os.remove(temp_file_path)
+        }
+
+        media = MediaFileUpload(temp_file_path, chunksize=-1, resumable=True)
+        
+        request_youtube = youtube_service.videos().insert(
+            part=','.join(body.keys()),
+            body=body,
+            media_body=media
+        )
+        
+        response = request_youtube.execute()
+    finally:
+        # Clean up the temporary file
+        os.remove(temp_file_path)
     # Obtener el ID del video de la respuesta de YouTube
     video_id = response.get('id')
     video_url = "https://www.youtube.com/watch?v={}".format(video_id)
