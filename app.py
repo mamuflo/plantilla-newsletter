@@ -155,7 +155,7 @@ def upload_image():
     drive_service.permissions().create(fileId=file_id, body=permission).execute()
     
     # Construir el enlace de acceso directo
-    direct_link = "https://drive.google.com/uc?export=view&id={}".format(file_id)
+    direct_link = "https://drive.google.com/uc?id={}".format(file_id)
     
     return jsonify({'url': direct_link})
 
@@ -313,7 +313,43 @@ def index():
     # Si es GET, mostrar el formulario con los datos de la sesión si existen
     form_data = session.get('form_data', {})
     credentials_exist = 'credentials' in session
-    return render_template('index.html', credentials_exist=credentials_exist, **form_data)
+    return render_template('index.html', credentials_exist=credentials_exist, form_data=form_data)
+
+
+@app.route('/list_images_in_folder/<folder_id>', methods=['GET'])
+def list_images_in_folder(folder_id):
+    if 'credentials' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+
+    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
+    drive_service = build('drive', 'v3', credentials=credentials)
+
+    images = []
+    page_token = None
+    try:
+        while True:
+            response = drive_service.files().list(
+                q="'{}' in parents and mimeType contains 'image/' and trashed=false".format(folder_id),
+                spaces='drive',
+                fields='nextPageToken, files(id, name)',
+                pageToken=page_token
+            ).execute()
+            
+            for file in response.get('files', []):
+                direct_link = "https://drive.google.com/uc?id={}".format(file.get('id'))
+                images.append({'id': file.get('id'), 'name': file.get('name'), 'url': direct_link})
+            
+            page_token = response.get('nextPageToken', None)
+            if page_token is None:
+                break
+        
+        images.sort(key=lambda x: x['name'].lower())
+        return jsonify(images)
+
+    except Exception as e:
+        print("Error listing images in folder: {}".format(e))
+        return jsonify({'error': 'Failed to list images from Google Drive folder'}), 500
+
 
 if __name__ == '__main__':
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'

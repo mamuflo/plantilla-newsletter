@@ -174,22 +174,27 @@
                 <div class="resource-item">
                     <label for="header_logo_src_upload" style="flex-basis: 200px;">Logo (Cabecera):</label>
                     <input type="file" id="header_logo_src_upload" accept="image/*" data-target-input="header_logo_src">
+                    <span class="image-selector-placeholder" data-target-input="header_logo_src"></span>
                 </div>
                 <div class="resource-item">
                     <label for="hero_src_upload" style="flex-basis: 200px;">Banner Principal:</label>
                     <input type="file" id="hero_src_upload" accept="image/*" data-target-input="hero_src">
+                    <span class="image-selector-placeholder" data-target-input="hero_src"></span>
                 </div>
                 <div class="resource-item">
                     <label for="section1_img_src_upload" style="flex-basis: 200px;">Imagen (Sección 1):</label>
                     <input type="file" id="section1_img_src_upload" accept="image/*" data-target-input="section1_img_src">
+                    <span class="image-selector-placeholder" data-target-input="section1_img_src"></span>
                 </div>
                 <div class="resource-item">
                     <label for="section2_img_src_upload" style="flex-basis: 200px;">Imagen (Sección 2):</label>
                     <input type="file" id="section2_img_src_upload" accept="image/*" data-target-input="section2_img_src">
+                    <span class="image-selector-placeholder" data-target-input="section2_img_src"></span>
                 </div>
                  <div class="resource-item">
                     <label for="video_thumbnail_src_upload" style="flex-basis: 200px;">Miniatura Vídeo:</label>
                     <input type="file" id="video_thumbnail_src_upload" accept="image/*" data-target-input="video_thumbnail_src">
+                    <span class="image-selector-placeholder" data-target-input="video_thumbnail_src"></span>
                 </div>
                 <div class="button-container" style="margin: 1em 0;">
                     <button type="button" class="upload-button" onclick="uploadAllImages()">Subir Todas las Imágenes Seleccionadas</button>
@@ -207,76 +212,78 @@
         <fieldset>
             <legend>1. Cabecera y Banner</legend>
             <label for="title">Título de la Página (pestaña del navegador):</label>
-            <input type="text" id="title" name="title" value="{{ title | default('Newsletter CITED Cantabria') }}">
+            <input type="text" id="title" name="title" value="{{ form_data.title | default('Newsletter CITED Cantabria') }}">
 
             <label for="header_logo_link">Enlace del Logo (Cabecera):</label>
-            <input type="text" id="header_logo_link" name="header_logo_link" value="{{ header_logo_link | default('https://educantabria.es/web/cited') }}">
+            <input type="text" id="header_logo_link" name="header_logo_link" value="{{ form_data.header_logo_link | default('https://educantabria.es/web/cited') }}">
 
             <label for="header_logo_src">URL de la Imagen del Logo (Cabecera):</label>
-            <input type="text" id="header_logo_src" name="header_logo_src" value="{{ header_logo_src | default('https://www.educantabria.es/documents/21790824/0/Logo+Cited_Aula+del+futuro+%281%29.png') }}">
+            <input type="text" id="header_logo_src" name="header_logo_src" value="{{ form_data.header_logo_src | default('https://www.educantabria.es/documents/21790824/0/Logo+Cited_Aula+del+futuro+%281%29.png') }}">
 
             <label for="hero_link">Enlace del Banner Principal:</label>
-            <input type="text" id="hero_link" name="hero_link" value="{{ hero_link | default('https://educantabria.es/web/cited') }}">
+            <input type="text" id="hero_link" name="hero_link" value="{{ form_data.hero_link | default('https://educantabria.es/web/cited') }}">
 
             <label for="hero_src">URL de la Imagen del Banner Principal:</label>
-            <input type="text" id="hero_src" name="hero_src" value="{{ hero_src | default('https://www.educantabria.es/documents/21790824/21790904/artificial-intelligence-3706562_1920.jpg') }}">
+            <input type="text" id="hero_src" name="hero_src" value="{{ form_data.hero_src | default('https://www.educantabria.es/documents/21790824/21790904/artificial-intelligence-3706562_1920.jpg') }}">
 
             <label for="hero_alt">Texto Alternativo del Banner Principal:</label>
-            <input type="text" id="hero_alt" name="hero_alt" value="{{ hero_alt | default('Innovación y Formación CITED') }}">
+            <input type="text" id="hero_alt" name="hero_alt" value="{{ form_data.hero_alt | default('Innovación y Formación CITED') }}">
         </fieldset>
 
         <fieldset>
             <legend>2. Contenido Introductorio</legend>
             <label for="intro_title">Título Principal:</label>
-            <input type="text" id="intro_title" name="intro_title" value="{{ intro_title | default('Descubre el CITED: Tu Futuro Empieza Aquí') }}">
+            <input type="text" id="intro_title" name="intro_title" value="{{ form_data.intro_title | default('Descubre el CITED: Tu Futuro Empieza Aquí') }}">
 
             <label for="intro_p1">Párrafo de Introducción 1 (acepta HTML como &lt;strong&gt;):</label>
-            <textarea id="intro_p1" name="intro_p1">{{ intro_p1 | default('El &lt;strong&gt;Centro de Innovación y Tecnología Educativa de Cantabria (CITED)&lt;/strong&gt; es tu punto de referencia para la transformación digital en la educación.') }}</textarea>
+            <textarea id="intro_p1" name="intro_p1">{{ form_data.intro_p1 | default('El &lt;strong&gt;Centro de Innovación y Tecnología Educativa de Cantabria (CITED)&lt;/strong&gt; es tu punto de referencia para la transformación digital en la educación.') }}</textarea>
 
             <label for="intro_p2">Párrafo de Introducción 2 (acepta HTML como &lt;strong&gt;):</label>
-            <textarea id="intro_p2" name="intro_p2">{{ intro_p2 | default('Explora nuestras nuevas líneas de formación, programas, recursos y proyectos diseñados para &lt;strong&gt;docentes&lt;/strong&gt; que buscan innovar en el aula.') }}</textarea>
+            <textarea id="intro_p2" name="intro_p2">{{ form_data.intro_p2 | default('Explora nuestras nuevas líneas de formación, programas, recursos y proyectos diseñados para &lt;strong&gt;docentes&lt;/strong&gt; que buscan innovar en el aula.') }}</textarea>
         </fieldset>
 
         <fieldset>
             <legend>Sección 1</legend>
+            {% set section1 = form_data.sections[0] if form_data.sections and form_data.sections|length > 0 else {} %}
             <label for="section1_img_src">URL de la Imagen (Sección 1):</label>
-            <input type="text" id="section1_img_src" name="section1_img_src" value="{{ section1_img_src | default('https://www.educantabria.es/documents/21790824/21790904/formacion.png') }}">
+            <input type="text" id="section1_img_src" name="section1_img_src" value="{{ section1.img_src | default('https://www.educantabria.es/documents/21790824/21790904/formacion.png') }}">
 
             <label for="section1_img_alt">Texto Alternativo de la Imagen (Sección 1):</label>
-            <input type="text" id="section1_img_alt" name="section1_img_alt" value="{{ section1_img_alt | default('Formación para Docentes') }}">
+            <input type="text" id="section1_img_alt" name="section1_img_alt" value="{{ section1.img_alt | default('Formación para Docentes') }}">
 
             <label for="section1_title">Título (Sección 1):</label>
-            <input type="text" id="section1_title" name="section1_title" value="{{ section1_title | default('Formación del Profesorado') }}">
+            <input type="text" id="section1_title" name="section1_title" value="{{ section1.title | default('Formación del Profesorado') }}">
 
             <label for="section1_p">Párrafo (Sección 1):</label>
-            <textarea id="section1_p" name="section1_p">{{ section1_p | default('Actualiza tus competencias digitales, descubre metodologías activas y lidera el cambio en tu aula. Ofrecemos cursos prácticos, píldoras formativas y asesoramiento en proyectos de innovación.') }}</textarea>
+            <textarea id="section1_p" name="section1_p">{{ section1.p | default('Actualiza tus competencias digitales, descubre metodologías activas y lidera el cambio en tu aula. Ofrecemos cursos prácticos, píldoras formativas y asesoramiento en proyectos de innovación.') }}</textarea>
 
             <label for="section1_button_link">Enlace del Botón (Sección 1):</label>
-            <input type="text" id="section1_button_link" name="section1_button_link" value="{{ section1_button_link | default('https://aulacited.educantabria.es') }}">
+            <input type="text" id="section1_button_link" name="section1_button_link" value="{{ section1.button_link | default('https://aulacited.educantabria.es') }}">
 
             <label for="section1_button_text">Texto del Botón (Sección 1):</label>
-            <input type="text" id="section1_button_text" name="section1_button_text" value="{{ section1_button_text | default('Ver Cursos para Docentes') }}">
+            <input type="text" id="section1_button_text" name="section1_button_text" value="{{ section1.button_text | default('Ver Cursos para Docentes') }}">
         </fieldset>
 
         <fieldset>
             <legend>Sección 2</legend>
+            {% set section2 = form_data.sections[1] if form_data.sections and form_data.sections|length > 1 else {} %}
             <label for="section2_img_src">URL de la Imagen (Sección 2):</label>
-            <input type="text" id="section2_img_src" name="section2_img_src" value="{{ section2_img_src | default('https://www.educantabria.es/documents/21790824/21790904/programas.png') }}">
+            <input type="text" id="section2_img_src" name="section2_img_src" value="{{ section2.img_src | default('https://www.educantabria.es/documents/21790824/21790904/programas.png') }}">
 
             <label for="section2_img_alt">Texto Alternativo de la Imagen (Sección 2):</label>
-            <input type="text" id="section2_img_alt" name="section2_img_alt" value="{{ section2_img_alt | default('Programas CITED') }}">
+            <input type="text" id="section2_img_alt" name="section2_img_alt" value="{{ section2.img_alt | default('Programas CITED') }}">
 
             <label for="section2_title">Título (Sección 2):</label>
-            <input type="text" id="section2_title" name="section2_title" value="{{ section2_title | default('Nuestros Programas') }}">
+            <input type="text" id="section2_title" name="section2_title" value="{{ section2.title | default('Nuestros Programas') }}">
 
             <label for="section2_p">Párrafo (Sección 2):</label>
-            <textarea id="section2_p" name="section2_p">{{ section2_p | default('Descubre los programas de innovación que impulsamos desde el CITED, diseñados para fomentar la integración de la tecnología y las nuevas metodologías en los centros educativos de Cantabria.') }}</textarea>
+            <textarea id="section2_p" name="section2_p">{{ section2.p | default('Descubre los programas de innovación que impulsamos desde el CITED, diseñados para fomentar la integración de la tecnología y las nuevas metodologías en los centros educativos de Cantabria.') }}</textarea>
 
             <label for="section2_button_link">Enlace del Botón (Sección 2):</label>
-            <input type="text" id="section2_button_link" name="section2_button_link" value="{{ section2_button_link | default('https://www.educantabria.es/web/cited/programas1') }}">
+            <input type="text" id="section2_button_link" name="section2_button_link" value="{{ section2.button_link | default('https://www.educantabria.es/web/cited/programas1') }}">
 
             <label for="section2_button_text">Texto del Botón (Sección 2):</label>
-            <input type="text" id="section2_button_text" name="section2_button_text" value="{{ section2_button_text | default('Ver Todos los Programas') }}">
+            <input type="text" id="section2_button_text" name="section2_button_text" value="{{ section2.button_text | default('Ver Todos los Programas') }}">
         </fieldset>
 
         <div id="dynamic-sections-container">
@@ -290,19 +297,19 @@
         <fieldset>
             <legend>Sección de Vídeo</legend>
             <label for="video_title">Título del Vídeo:</label>
-            <input type="text" id="video_title" name="video_title" value="{{ video_title | default('Conoce el CITED en 1 Minuto') }}">
+            <input type="text" id="video_title" name="video_title" value="{{ form_data.video_title | default('Conoce el CITED en 1 Minuto') }}">
 
             <label for="video_p">Párrafo del Vídeo:</label>
-            <textarea id="video_p" name="video_p">{{ video_p | default('Descubre nuestras instalaciones y todo lo que podemos ofrecerte en este breve video.') }}</textarea>
+            <textarea id="video_p" name="video_p">{{ form_data.video_p | default('Descubre nuestras instalaciones y todo lo que podemos ofrecerte en este breve video.') }}</textarea>
 
             <label for="video_link">Enlace al Archivo de Vídeo o Página:</label>
-            <input type="text" id="video_link" name="video_link" value="{{ video_link | default('https://www.educantabria.es/documents/21790824/21790889/Bienvenid%40s+al+CITED.mp4') }}">
+            <input type="text" id="video_link" name="video_link" value="{{ form_data.video_link | default('https://www.educantabria.es/documents/21790824/21790889/Bienvenid%40s+al+CITED.mp4') }}">
 
             <label for="video_thumbnail_src">URL de la Imagen Miniatura del Vídeo:</label>
-            <input type="text" id="video_thumbnail_src" name="video_thumbnail_src" value="{{ video_thumbnail_src | default('https://www.educantabria.es/documents/21790824/21790904/video.png') }}">
+            <input type="text" id="video_thumbnail_src" name="video_thumbnail_src" value="{{ form_data.video_thumbnail_src | default('https://www.educantabria.es/documents/21790824/21790904/video.png') }}">
 
             <label for="video_thumbnail_alt">Texto Alternativo de la Miniatura:</label>
-            <input type="text" id="video_thumbnail_alt" name="video_thumbnail_alt" value="{{ video_thumbnail_alt | default('Ver video sobre el CITED') }}">
+            <input type="text" id="video_thumbnail_alt" name="video_thumbnail_alt" value="{{ form_data.video_thumbnail_alt | default('Ver video sobre el CITED') }}">
         </fieldset>
 
         <fieldset>
@@ -310,56 +317,56 @@
 
             <label for="bg_type">Tipo de Fondo:</label>
             <select id="bg_type" name="bg_type">
-                <option value="solid" {% if bg_type == 'solid' %}selected{% endif %}>Color Sólido</option>
-                <option value="gradient" {% if bg_type == 'gradient' %}selected{% endif %}>Degradado</option>
+                <option value="solid" {% if form_data.bg_type == 'solid' %}selected{% endif %}>Color Sólido</option>
+                <option value="gradient" {% if form_data.bg_type == 'gradient' %}selected{% endif %}>Degradado</option>
             </select>
 
-            <div id="solid_color_picker" style="display:{% if bg_type == 'gradient' %}none{% else %}block{% endif %};">
+            <div id="solid_color_picker" style="display:{% if form_data.bg_type == 'gradient' %}none{% else %}block{% endif %};">
                 <label for="bg_color">Color de Fondo:</label>
-                <input type="color" id="bg_color" name="bg_color" value="{{ bg_color|default('#f2f2f2') }}">
+                <input type="color" id="bg_color" name="bg_color" value="{{ form_data.bg_color|default('#f2f2f2') }}">
             </div>
 
-            <div id="gradient_color_picker" style="display:{% if bg_type == 'gradient' %}block{% else %}none{% endif %};">
+            <div id="gradient_color_picker" style="display:{% if form_data.bg_type == 'gradient' %}block{% else %}none{% endif %};">
                 <label for="bg_color_1">Color de Fondo 1:</label>
-                <input type="color" id="bg_color_1" name="bg_color_1" value="{{ bg_color_1|default('#f2f2f2') }}">
+                <input type="color" id="bg_color_1" name="bg_color_1" value="{{ form_data.bg_color_1|default('#f2f2f2') }}">
                 <label for="bg_color_2">Color de Fondo 2:</label>
-                <input type="color" id="bg_color_2" name="bg_color_2" value="{{ bg_color_2|default('#ffffff') }}">
+                <input type="color" id="bg_color_2" name="bg_color_2" value="{{ form_data.bg_color_2|default('#ffffff') }}">
             </div>
 
             <label for="title_color">Color de los Títulos:</label>
-            <input type="color" id="title_color" name="title_color" value="{{ title_color|default('#333333') }}">
+            <input type="color" id="title_color" name="title_color" value="{{ form_data.title_color|default('#333333') }}">
 
             <label for="title_font_size">Tamaño de los Títulos:</label>
             <select id="title_font_size" name="title_font_size">
-                <option value="20px" {% if title_font_size == '20px' %}selected{% endif %}>20px</option>
-                <option value="24px" {% if title_font_size == '24px' %}selected{% endif %}>24px</option>
-                <option value="28px" {% if title_font_size == '28px' %}selected{% endif %}>28px</option>
-                <option value="32px" {% if title_font_size == '32px' %}selected{% endif %}>32px</option>
+                <option value="20px" {% if form_data.title_font_size == '20px' %}selected{% endif %}>20px</option>
+                <option value="24px" {% if form_data.title_font_size == '24px' %}selected{% endif %}>24px</option>
+                <option value="28px" {% if form_data.title_font_size == '28px' %}selected{% endif %}>28px</option>
+                <option value="32px" {% if form_data.title_font_size == '32px' %}selected{% endif %}>32px</option>
             </select>
 
             <label for="text_color">Color de los Párrafos:</label>
-            <input type="color" id="text_color" name="text_color" value="{{ text_color|default('#555555') }}">
+            <input type="color" id="text_color" name="text_color" value="{{ form_data.text_color|default('#555555') }}">
 
             <label for="font_family">Tipo de Fuente:</label>
             <select id="font_family" name="font_family">
-                <option value="Arial, sans-serif" {% if font_family == 'Arial, sans-serif' %}selected{% endif %}>Arial</option>
-                <option value="Georgia, serif" {% if font_family == 'Georgia, serif' %}selected{% endif %}>Georgia</option>
-                <option value="'Times New Roman', Times, serif" {% if font_family == "'Times New Roman', Times, serif" %}selected{% endif %}>Times New Roman</option>
-                <option value="'Courier New', Courier, monospace" {% if font_family == "'Courier New', Courier, monospace" %}selected{% endif %}>Courier New</option>
-                <option value="Verdana, Geneva, sans-serif" {% if font_family == 'Verdana, Geneva, sans-serif' %}selected{% endif %}>Verdana</option>
-                <option value="'Roboto', sans-serif" {% if font_family == "'Roboto', sans-serif" %}selected{% endif %}>Roboto</option>
-                <option value="'Open Sans', sans-serif" {% if font_family == "'Open Sans', sans-serif" %}selected{% endif %}>Open Sans</option>
-                <option value="'Lato', sans-serif" {% if font_family == "'Lato', sans-serif" %}selected{% endif %}>Lato</option>
+                <option value="Arial, sans-serif" {% if form_data.font_family == 'Arial, sans-serif' %}selected{% endif %}>Arial</option>
+                <option value="Georgia, serif" {% if form_data.font_family == 'Georgia, serif' %}selected{% endif %}>Georgia</option>
+                <option value="'Times New Roman', Times, serif" {% if form_data.font_family == "'Times New Roman', Times, serif" %}selected{% endif %}>Times New Roman</option>
+                <option value="'Courier New', Courier, monospace" {% if form_data.font_family == "'Courier New', Courier, monospace" %}selected{% endif %}>Courier New</option>
+                <option value="Verdana, Geneva, sans-serif" {% if form_data.font_family == 'Verdana, Geneva, sans-serif' %}selected{% endif %}>Verdana</option>
+                <option value="'Roboto', sans-serif" {% if form_data.font_family == "'Roboto', sans-serif" %}selected{% endif %}>Roboto</option>
+                <option value="'Open Sans', sans-serif" {% if form_data.font_family == "'Open Sans', sans-serif" %}selected{% endif %}>Open Sans</option>
+                <option value="'Lato', sans-serif" {% if form_data.font_family == "'Lato', sans-serif" %}selected{% endif %}>Lato</option>
             </select>
         </fieldset>
 
         <fieldset>
             <legend>8. Pie de Página</legend>
             <label for="footer_web_link">Enlace Web del Pie de Página:</label>
-            <input type="text" id="footer_web_link" name="footer_web_link" value="{{ footer_web_link | default('https://educantabria.es/web/cited') }}">
+            <input type="text" id="footer_web_link" name="footer_web_link" value="{{ form_data.footer_web_link | default('https://educantabria.es/web/cited') }}">
 
             <label for="footer_web_text">Texto del Enlace Web del Pie de Página:</label>
-            <input type="text" id="footer_web_text" name="footer_web_text" value="{{ footer_web_text | default('educantabria.es/web/cited') }}">
+            <input type="text" id="footer_web_text" name="footer_web_text" value="{{ form_data.footer_web_text | default('educantabria.es/web/cited') }}">
         </fieldset>
 
         <div class="button-container">
@@ -369,6 +376,8 @@
     </form>
 
     <script>
+        var formData = {{ form_data | tojson }};
+
         document.getElementById('bg_type').addEventListener('change', function() {
             var solidPicker = document.getElementById('solid_color_picker');
             var gradientPicker = document.getElementById('gradient_color_picker');
@@ -390,7 +399,19 @@
             // Event listener para el dropdown de carpetas
             document.getElementById('drive_folder_select').addEventListener('change', function() {
                 document.getElementById('drive_folder_id').value = this.value;
+                updateImageSelectors(this.value);
             });
+
+            // Repoblar secciones dinámicas
+            if (window.formData && window.formData.sections) {
+                const sectionsData = window.formData.sections;
+                sectionsData.forEach(section => {
+                    const sectionId = parseInt(section.id, 10);
+                    if (sectionId > 2) {
+                        addSection(section);
+                    }
+                });
+            }
         });
 
         function fetchDriveFolders() {
@@ -421,6 +442,7 @@
                     // Asegurarse de que el hidden input tenga el valor correcto al cargar
                     if (select.value) {
                          document.getElementById('drive_folder_id').value = select.value;
+                         updateImageSelectors(select.value);
                     }
                 })
                 .catch(error => {
@@ -462,7 +484,7 @@
 
         let sectionCounter = 3; // Empezamos desde 3 porque 1 y 2 ya existen
 
-        function addSection() {
+        function addSection(data = {}) {
             const container = document.getElementById('dynamic-sections-container');
             const sectionId = sectionCounter;
 
@@ -475,25 +497,26 @@
                 <div class="resource-item">
                     <label for="section${sectionId}_img_src_upload" style="flex-basis: 200px;">Imagen (Sección ${sectionId}):</label>
                     <input type="file" id="section${sectionId}_img_src_upload" accept="image/*" data-target-input="section${sectionId}_img_src">
+                    <span class="image-selector-placeholder" data-target-input="section${sectionId}_img_src"></span>
                 </div>
 
                 <label for="section${sectionId}_img_src">URL de la Imagen (Sección ${sectionId}):</label>
-                <input type="text" id="section${sectionId}_img_src" name="section${sectionId}_img_src">
+                <input type="text" id="section${sectionId}_img_src" name="section${sectionId}_img_src" value="${data.img_src || ''}">
 
                 <label for="section${sectionId}_img_alt">Texto Alternativo de la Imagen (Sección ${sectionId}):</label>
-                <input type="text" id="section${sectionId}_img_alt" name="section${sectionId}_img_alt">
+                <input type="text" id="section${sectionId}_img_alt" name="section${sectionId}_img_alt" value="${data.img_alt || ''}">
 
                 <label for="section${sectionId}_title">Título (Sección ${sectionId}):</label>
-                <input type="text" id="section${sectionId}_title" name="section${sectionId}_title">
+                <input type="text" id="section${sectionId}_title" name="section${sectionId}_title" value="${data.title || ''}">
 
                 <label for="section${sectionId}_p">Párrafo (Sección ${sectionId}):</label>
-                <textarea id="section${sectionId}_p" name="section${sectionId}_p"></textarea>
+                <textarea id="section${sectionId}_p" name="section${sectionId}_p">${data.p || ''}</textarea>
 
                 <label for="section${sectionId}_button_link">Enlace del Botón (Sección ${sectionId}):</label>
-                <input type="text" id="section${sectionId}_button_link" name="section${sectionId}_button_link">
+                <input type="text" id="section${sectionId}_button_link" name="section${sectionId}_button_link" value="${data.button_link || ''}">
 
                 <label for="section${sectionId}_button_text">Texto del Botón (Sección ${sectionId}):</label>
-                <input type="text" id="section${sectionId}_button_text" name="section${sectionId}_button_text">
+                <input type="text" id="section${sectionId}_button_text" name="section${sectionId}_button_text" value="${data.button_text || ''}">
             `;
 
             container.appendChild(newSection);
@@ -518,6 +541,57 @@
                 }
                 section.remove();
             }
+        }
+
+        function updateImageSelectors(folderId) {
+            if (!folderId) return;
+
+            fetch(`/list_images_in_folder/${folderId}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('No se pudo cargar la lista de imágenes.');
+                    return response.json();
+                })
+                .then(images => {
+                    const placeholders = document.querySelectorAll('.image-selector-placeholder');
+                    placeholders.forEach(placeholder => {
+                        // Limpiar selector previo
+                        placeholder.innerHTML = '';
+
+                        if (images.length === 0) return;
+
+                        const targetInputId = placeholder.getAttribute('data-target-input');
+                        const select = document.createElement('select');
+                        select.style.marginLeft = '10px';
+                        select.style.maxWidth = '200px';
+
+                        // Opción por defecto
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'O seleccionar existente...';
+                        select.appendChild(defaultOption);
+
+                        // Llenar con imágenes
+                        images.forEach(image => {
+                            const option = document.createElement('option');
+                            option.value = image.url;
+                            option.textContent = image.name;
+                            select.appendChild(option);
+                        });
+
+                        // Event listener para actualizar el campo de texto
+                        select.addEventListener('change', function() {
+                            const targetInput = document.getElementById(targetInputId);
+                            if (targetInput) {
+                                targetInput.value = this.value;
+                            }
+                        });
+
+                        placeholder.appendChild(select);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching images:', error);
+                });
         }
 
         async function uploadAllImages() {
