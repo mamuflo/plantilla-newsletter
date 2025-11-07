@@ -181,7 +181,7 @@ def upload_video():
     return jsonify({'url': video_url})
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         # Recoger datos del formulario
