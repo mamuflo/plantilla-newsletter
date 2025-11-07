@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import json
+import io
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 from pynliner import Pynliner
 import google.oauth2.credentials
@@ -121,12 +122,14 @@ def upload_image():
     if not file:
         return jsonify({'error': 'No file provided'}), 400
 
+    file_content = file.stream.read()
+
     file_metadata = {
         'name': file.filename,
         'parents': [folder_id] if folder_id else []
     }
 
-    media = MediaFileUpload(file.stream, mimetype=file.mimetype, resumable=True)
+    media = MediaFileUpload(io.BytesIO(file_content), mimetype=file.mimetype, resumable=True)
     
     request_drive = drive_service.files().create(media_body=media, body=file_metadata, fields='id, webViewLink')
     response = request_drive.execute()
@@ -153,6 +156,8 @@ def upload_video():
     if not file:
         return jsonify({'error': 'No file provided'}), 400
 
+    file_content = file.stream.read()
+
     body = {
         'snippet': {
             'title': 'Video subido desde la App de Newsletter',
@@ -165,7 +170,7 @@ def upload_video():
         }
     }
 
-    media = MediaFileUpload(file.stream, chunksize=-1, resumable=True)
+    media = MediaFileUpload(io.BytesIO(file_content), chunksize=-1, resumable=True)
     
     request_youtube = youtube_service.videos().insert(
         part=','.join(body.keys()),
