@@ -154,8 +154,10 @@ def upload_image():
     permission = {'type': 'anyone', 'role': 'reader'}
     drive_service.permissions().create(fileId=file_id, body=permission).execute()
     
-    # Devolver el enlace de contenido web para incrustación directa
-    return jsonify({'url': response.get('webContentLink')})
+    # Construir el enlace de descarga directa
+    direct_link = "https://lh3.googleusercontent.com/d/{}".format(file_id)
+    
+    return jsonify({'url': direct_link})
 
 @app.route('/upload_video', methods=['POST'])
 def upload_video():
@@ -329,12 +331,18 @@ def list_images_in_folder(folder_id):
             response = drive_service.files().list(
                 q="'{}' in parents and mimeType contains 'image/' and trashed=false".format(folder_id),
                 spaces='drive',
-                fields='nextPageToken, files(id, name, webContentLink)',
+                fields='nextPageToken, files(id, name)',
                 pageToken=page_token
             ).execute()
             
             for file in response.get('files', []):
-                images.append({'id': file.get('id'), 'name': file.get('name'), 'url': file.get('webContentLink')})
+                file_id = file.get('id')
+                direct_link = "https://lh3.googleusercontent.com/d/{}".format(file_id)
+                images.append({
+                    'id': file_id, 
+                    'name': file.get('name'), 
+                    'url': direct_link
+                })
             
             page_token = response.get('nextPageToken', None)
             if page_token is None:
