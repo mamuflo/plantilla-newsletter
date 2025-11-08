@@ -229,18 +229,59 @@
 
             // Copiar al portapapeles
             copyButton.addEventListener('click', function() {
-                try {
-                    const blob = new Blob([htmlForPreview], { type: 'text/html' });
-                    const clipboardItem = new ClipboardItem({ 'text/html': blob });
-                    navigator.clipboard.write([clipboardItem]).then(function() {
-                        copyButton.textContent = '¡Copiado!';
-                        copyButton.style.backgroundColor = '#28a745';
-                    }, function(err) {
-                        copyButton.textContent = 'Error al copiar';
-                        console.error('Error al copiar el contenido: ', err);
-                    });
-                } catch (err) {
-                    console.error('Error al copiar el contenido: ', err);
+                function fallbackCopy(html) {
+                    const tempEl = document.createElement('div');
+                    tempEl.style.position = 'absolute';
+                    tempEl.style.left = '-9999px';
+                    tempEl.innerHTML = html;
+                    document.body.appendChild(tempEl);
+                    
+                    const range = document.createRange();
+                    range.selectNodeContents(tempEl);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+
+                    let success = false;
+                    try {
+                        success = document.execCommand('copy');
+                    } catch (err) {
+                        console.error('Fallback: Oops, unable to copy', err);
+                    }
+
+                    document.body.removeChild(tempEl);
+                    return success;
+                }
+
+                if (navigator.clipboard && navigator.clipboard.write) {
+                    try {
+                        const blob = new Blob([htmlForPreview], { type: 'text/html' });
+                        const clipboardItem = new ClipboardItem({ 'text/html': blob });
+                        navigator.clipboard.write([clipboardItem]).then(function() {
+                            copyButton.textContent = '¡Copiado!';
+                            copyButton.style.backgroundColor = '#28a745';
+                        }, function(err) {
+                            console.error('Async: Could not copy text: ', err);
+                            if (fallbackCopy(htmlForPreview)) {
+                                copyButton.textContent = '¡Copiado!';
+                                copyButton.style.backgroundColor = '#28a745';
+                            } else {
+                                copyButton.textContent = 'Error al copiar';
+                            }
+                        });
+                    } catch (err) {
+                        console.error('Error al usar la API del portapapeles: ', err);
+                        if (fallbackCopy(htmlForPreview)) {
+                            copyButton.textContent = '¡Copiado!';
+                            copyButton.style.backgroundColor = '#28a745';
+                        } else {
+                            copyButton.textContent = 'Error';
+                        }
+                    }
+                } else if (fallbackCopy(htmlForPreview)) {
+                    copyButton.textContent = '¡Copiado!';
+                    copyButton.style.backgroundColor = '#28a745';
+                } else {
                     copyButton.textContent = 'Error';
                 }
 

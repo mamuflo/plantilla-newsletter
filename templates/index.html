@@ -194,6 +194,9 @@
         .resource-item input[type="file"] {
             flex-grow: 1;
         }
+        .resource-label {
+            flex-basis: 200px;
+        }
         .status-indicator {
             padding: 10px;
             border-radius: 5px;
@@ -253,6 +256,7 @@
             body {
                 padding: 1em;
                 font-size: 16px; /* Aumentar tamaño de fuente base para móvil */
+                word-wrap: break-word; /* Evitar desbordamiento de palabras largas */
             }
             form {
                 padding: 1em;
@@ -280,7 +284,7 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
-            .resource-item label {
+            .resource-item label, .resource-label {
                 margin-bottom: 0.5em;
                 flex-basis: auto; /* Resetear base */
             }
@@ -294,6 +298,7 @@
                 width: 100%;
                 padding: 15px;
                 font-size: 1.1em;
+                box-sizing: border-box; /* Añadido para incluir el padding en el ancho total */
             }
             input[type="submit"] {
                 width: 100%;
@@ -305,6 +310,10 @@
                 right: 10px;
                 width: 45px;
                 height: 45px;
+            }
+            .tox-tinymce {
+                width: 100% !important;
+                box-sizing: border-box;
             }
         }
     </style>
@@ -330,12 +339,12 @@
                 
                 <h4>Configuración de Google Drive</h4>
                 <div class="resource-item">
-                    <label for="drive_folder_select" style="flex-basis: 200px;">Seleccionar Carpeta Existente:</label>
+                    <label for="drive_folder_select" class="resource-label">Seleccionar Carpeta Existente:</label>
                     <select id="drive_folder_select" style="flex-grow: 1; padding: 10px; margin-bottom: 0;"></select>
                     <button type="button" class="upload-button" onclick="fetchDriveFolders()">Refrescar Lista</button>
                 </div>
                 <div class="resource-item">
-                    <label for="drive_folder_name" style="flex-basis: 200px;">O Crear Carpeta Nueva:</label>
+                    <label for="drive_folder_name" class="resource-label">O Crear Carpeta Nueva:</label>
                     <input type="text" id="drive_folder_name" placeholder="Ej: Newsletter_Imagenes_2024" style="margin-bottom: 0;">
                     <button type="button" class="upload-button" onclick="getOrCreateFolder()">Crear y Usar</button>
                 </div>
@@ -345,27 +354,27 @@
                 <h4>Imágenes (subir a Google Drive)</h4>
                 <p>Selecciona todas las imágenes que quieras subir. Después, pulsa el botón de abajo para subirlas todas a la vez.</p>
                 <div class="resource-item">
-                    <label for="header_logo_src_upload" style="flex-basis: 200px;">Logo (Cabecera):</label>
+                    <label for="header_logo_src_upload" class="resource-label">Logo (Cabecera):</label>
                     <input type="file" id="header_logo_src_upload" accept="image/*" data-target-input="header_logo_src">
                     <span class="image-selector-placeholder" data-target-input="header_logo_src"></span>
                 </div>
                 <div class="resource-item">
-                    <label for="hero_src_upload" style="flex-basis: 200px;">Banner Principal:</label>
+                    <label for="hero_src_upload" class="resource-label">Banner Principal:</label>
                     <input type="file" id="hero_src_upload" accept="image/*" data-target-input="hero_src">
                     <span class="image-selector-placeholder" data-target-input="hero_src"></span>
                 </div>
                 <div class="resource-item">
-                    <label for="section1_img_src_upload" style="flex-basis: 200px;">Imagen (Sección 1):</label>
+                    <label for="section1_img_src_upload" class="resource-label">Imagen (Sección 1):</label>
                     <input type="file" id="section1_img_src_upload" accept="image/*" data-target-input="section1_img_src">
                     <span class="image-selector-placeholder" data-target-input="section1_img_src"></span>
                 </div>
                 <div class="resource-item">
-                    <label for="section2_img_src_upload" style="flex-basis: 200px;">Imagen (Sección 2):</label>
+                    <label for="section2_img_src_upload" class="resource-label">Imagen (Sección 2):</label>
                     <input type="file" id="section2_img_src_upload" accept="image/*" data-target-input="section2_img_src">
                     <span class="image-selector-placeholder" data-target-input="section2_img_src"></span>
                 </div>
                  <div class="resource-item">
-                    <label for="video_thumbnail_src_upload" style="flex-basis: 200px;">Miniatura Vídeo:</label>
+                    <label for="video_thumbnail_src_upload" class="resource-label">Miniatura Vídeo:</label>
                     <input type="file" id="video_thumbnail_src_upload" accept="image/*" data-target-input="video_thumbnail_src">
                     <span class="image-selector-placeholder" data-target-input="video_thumbnail_src"></span>
                 </div>
@@ -375,7 +384,7 @@
 
                 <h4>Vídeo (subir a YouTube)</h4>
                 <div class="resource-item">
-                    <label for="video_link_upload" style="flex-basis: 200px;">Vídeo Principal:</label>
+                    <label for="video_link_upload" class="resource-label">Vídeo Principal:</label>
                     <input type="file" id="video_link_upload" accept="video/*">
                     <button type="button" class="upload-button" onclick="uploadVideo('video_link_upload', 'video_link')">Subir Vídeo</button>
                 </div>
@@ -690,7 +699,7 @@
                 <button type="button" class="upload-button" style="float: right; margin-top: -4em;" onclick="removeSection(${sectionId})">Eliminar Sección</button>
                 
                 <div class="resource-item">
-                    <label for="section${sectionId}_img_src_upload" style="flex-basis: 200px;">Imagen (Sección ${sectionId}):</label>
+                    <label for="section${sectionId}_img_src_upload" class="resource-label">Imagen (Sección ${sectionId}):</label>
                     <input type="file" id="section${sectionId}_img_src_upload" accept="image/*" data-target-input="section${sectionId}_img_src">
                     <span class="image-selector-placeholder" data-target-input="section${sectionId}_img_src"></span>
                 </div>
