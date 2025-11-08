@@ -60,6 +60,10 @@
             background-color: #5a6268;
         }
 
+        #copyAndOpenOutlookButton {
+            display: none;
+        }
+
         body.dark-mode .button {
             background-color: #82c0ff;
             color: #1a1a1a;
@@ -141,6 +145,12 @@
                 width: 100%;
                 box-sizing: border-box;
             }
+            #copyButton {
+                display: none;
+            }
+            #copyAndOpenOutlookButton {
+                display: block;
+            }
         }
     </style>
 </head>
@@ -154,6 +164,7 @@
     <div class="controls">
         <a href="/" class="button secondary">Volver al Formulario</a>
         <button id="copyButton" class="button">Copiar para Outlook</button>
+        <button id="copyAndOpenOutlookButton" class="button">Copiar y Abrir en Outlook</button>
     </div>
 
     <div class="preview-container">
@@ -168,6 +179,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const themeToggle = document.getElementById('theme-toggle');
             const copyButton = document.getElementById('copyButton');
+            const copyAndOpenOutlookButton = document.getElementById('copyAndOpenOutlookButton');
             const previewFrame = document.getElementById('preview-frame');
             const htmlForPreview = document.getElementById('html_for_preview').textContent;
             const body = document.body;
@@ -227,8 +239,7 @@
                 applyTheme(newTheme);
             });
 
-            // Copiar al portapapeles
-            copyButton.addEventListener('click', function() {
+            function copyToClipboard(html) {
                 function fallbackCopy(html) {
                     const tempEl = document.createElement('div');
                     tempEl.style.position = 'absolute';
@@ -255,40 +266,45 @@
 
                 if (navigator.clipboard && navigator.clipboard.write) {
                     try {
-                        const blob = new Blob([htmlForPreview], { type: 'text/html' });
+                        const blob = new Blob([html], { type: 'text/html' });
                         const clipboardItem = new ClipboardItem({ 'text/html': blob });
-                        navigator.clipboard.write([clipboardItem]).then(function() {
-                            copyButton.textContent = '¡Copiado!';
-                            copyButton.style.backgroundColor = '#28a745';
-                        }, function(err) {
-                            console.error('Async: Could not copy text: ', err);
-                            if (fallbackCopy(htmlForPreview)) {
-                                copyButton.textContent = '¡Copiado!';
-                                copyButton.style.backgroundColor = '#28a745';
-                            } else {
-                                copyButton.textContent = 'Error al copiar';
-                            }
-                        });
+                        return navigator.clipboard.write([clipboardItem]);
                     } catch (err) {
                         console.error('Error al usar la API del portapapeles: ', err);
-                        if (fallbackCopy(htmlForPreview)) {
-                            copyButton.textContent = '¡Copiado!';
-                            copyButton.style.backgroundColor = '#28a745';
-                        } else {
-                            copyButton.textContent = 'Error';
-                        }
+                        return Promise.resolve(fallbackCopy(html));
                     }
-                } else if (fallbackCopy(htmlForPreview)) {
+                } else {
+                    return Promise.resolve(fallbackCopy(html));
+                }
+            }
+
+            copyButton.addEventListener('click', function() {
+                copyToClipboard(htmlForPreview).then(function() {
                     copyButton.textContent = '¡Copiado!';
                     copyButton.style.backgroundColor = '#28a745';
-                } else {
-                    copyButton.textContent = 'Error';
-                }
+                }, function() {
+                    copyButton.textContent = 'Error al copiar';
+                });
 
                 setTimeout(function() {
                     copyButton.textContent = 'Copiar para Outlook';
                     copyButton.style.backgroundColor = body.classList.contains('dark-mode') ? '#82c0ff' : '#005a9e';
                 }, 2000);
+            });
+
+            copyAndOpenOutlookButton.addEventListener('click', function() {
+                copyToClipboard(htmlForPreview).then(function() {
+                    const subject = "Newsletter";
+                    const body = encodeURIComponent(htmlForPreview);
+                    // Check if the mailto link is too long
+                    if (body.length > 1800) { // 2000 is a safe limit for most clients
+                        alert("El contenido de la newsletter es demasiado largo para abrirlo directamente en Outlook. Se ha copiado al portapapeles. Por favor, péguelo manualmente.");
+                    } else {
+                        window.location.href = `mailto:?subject=${subject}&body=${body}`;
+                    }
+                }, function() {
+                    alert("No se pudo copiar el contenido. No se puede abrir Outlook.");
+                });
             });
         });
     </script>
