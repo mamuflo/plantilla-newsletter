@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador de Newsletter</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.10.3/tinymce.min.js"></script>
     <script>
@@ -251,9 +252,13 @@
         @media (max-width: 768px) {
             body {
                 padding: 1em;
+                font-size: 16px; /* Aumentar tamaño de fuente base para móvil */
             }
             form {
-                padding: 1.5em;
+                padding: 1em;
+            }
+            fieldset {
+                padding: 1.5em 1em; /* Reducir padding horizontal en fieldsets */
             }
             h1 {
                 font-size: 1.8em;
@@ -261,24 +266,45 @@
             legend {
                 font-size: 1.3em;
             }
+            
+            input[type="text"], textarea, select, input[type="color"] {
+                width: 100%;
+                padding: 15px; /* Hacerlos más altos y fáciles de tocar */
+                font-size: 1em; /* Tamaño de fuente legible */
+                box-sizing: border-box; /* Asegurar que el padding no cause desbordamiento */
+                margin-left: 0;
+                margin-right: 0;
+            }
+
             .resource-item {
                 flex-direction: column;
                 align-items: flex-start;
             }
             .resource-item label {
                 margin-bottom: 0.5em;
+                flex-basis: auto; /* Resetear base */
             }
             .resource-item input[type="file"], .resource-item select, .resource-item input[type="text"] {
                 width: 100%;
                 margin-bottom: 1em;
+                box-sizing: border-box;
             }
-            .upload-button {
+            .upload-button, .auth-button {
                 margin-left: 0;
                 width: 100%;
+                padding: 15px;
+                font-size: 1.1em;
             }
             input[type="submit"] {
                 width: 100%;
-                padding: 15px;
+                padding: 18px; /* Botón principal más grande */
+                font-size: 1.2em;
+            }
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                width: 45px;
+                height: 45px;
             }
         }
     </style>
