@@ -367,7 +367,7 @@
                     <input type="text" id="drive_folder_name" placeholder="Ej: Newsletter_Imagenes_2024" style="margin-bottom: 0;">
                     <button type="button" class="upload-button" onclick="getOrCreateFolder()">Crear y Usar</button>
                 </div>
-                <input type="hidden" id="drive_folder_id">
+                <input type="hidden" id="drive_folder_id" name="drive_folder_id" value="{{ form_data.drive_folder_id }}">
                 <hr style="margin: 2em 0;">
 
                 <h4>Imágenes (subir a Google Drive)</h4>
