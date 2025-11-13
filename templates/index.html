@@ -335,6 +335,45 @@
                 border-left-width: 2px;
             }
         }
+
+        /* Estilos para el Modal de Confirmación de Borrado */
+        .delete-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1002; /* Por encima del otro modal */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .delete-modal-content {
+            background-color: #fff;
+            padding: 2em;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        body.dark-mode .delete-modal-content {
+            background-color: #2c2c2c;
+        }
+        .delete-modal-content p {
+            margin-top: 0;
+            margin-bottom: 1.5em;
+        }
+        .delete-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1em;
+        }
+
     </style>
 </head>
 <body>
@@ -363,108 +402,127 @@
             </div>
         </div>
 
+        <!-- Modal de Confirmación de Borrado -->
+        <div id="delete-confirm-modal" class="delete-modal-overlay">
+            <div class="delete-modal-content">
+                <p id="delete-modal-text">¿Estás seguro de que quieres borrar esta plantilla? Esta acción no se puede deshacer.</p>
+                <div class="delete-modal-actions">
+                    <button id="delete-modal-cancel-btn" class="upload-button" style="background-color: #6c757d;">Cancelar</button>
+                    <button id="delete-modal-confirm-btn" class="upload-button" style="background-color: #dc3545;">Confirmar Borrado</button>
+                </div>
+            </div>
+        </div>
+
         <script>
         document.addEventListener('DOMContentLoaded', function() {
             const loadBtn = document.getElementById('load-template-btn');
             const modal = document.getElementById('template-modal');
             const closeBtn = document.getElementById('close-modal-btn');
             const templateList = document.getElementById('template-list');
+            
             const deleteSelect = document.getElementById('template-delete-select');
             const deleteBtn = document.getElementById('delete-template-btn');
+            const deleteConfirmModal = document.getElementById('delete-confirm-modal');
+            const deleteModalText = document.getElementById('delete-modal-text');
+            const deleteCancelBtn = document.getElementById('delete-modal-cancel-btn');
+            const deleteConfirmBtn = document.getElementById('delete-modal-confirm-btn');
+            let templateIdToDelete = null;
 
-            if (loadBtn) { // Add a check to ensure the button exists
-                loadBtn.addEventListener('click', function() {
-                    templateList.innerHTML = '<li style="padding: 8px;">Cargando plantillas...</li>';
-                    modal.style.display = 'block';
+            function fetchTemplates() {
+                fetch('/list_templates')
+                    .then(response => {
+                        if (!response.ok) throw new Error('Error de autenticación o del servidor.');
+                        return response.json();
+                    })
+                    .then(templates => {
+                        templateList.innerHTML = ''; 
+                        deleteSelect.innerHTML = '';
 
-                    fetch('/list_templates')
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Error de autenticación o del servidor.');
-                            }
-                            return response.json();
-                        })
-                        .then(templates => {
-                            // Limpiar listas y desplegables
-                            templateList.innerHTML = ''; 
-                            deleteSelect.innerHTML = '';
-
-                            // Rellenar modal de carga
-                            if (templates.length > 0) {
-                                templates.forEach(template => {
-                                    const listItem = document.createElement('li');
-                                    const link = document.createElement('a');
-                                    link.href = '/load_template/' + template.id;
-                                    link.textContent = template.name;
-                                    link.style.display = 'block';
-                                    link.style.padding = '8px 12px';
-                                    link.style.textDecoration = 'none';
-                                    link.style.color = '#007bff';
-                                    link.onmouseover = function() { this.style.backgroundColor = '#f0f0f0'; };
-                                    link.onmouseout = function() { this.style.backgroundColor = 'transparent'; };
-                                    listItem.appendChild(link);
-                                    templateList.appendChild(listItem);
-                                });
+                        if (templates.length > 0) {
+                            templates.forEach(template => {
+                                // Rellenar modal de carga
+                                const listItem = document.createElement('li');
+                                const link = document.createElement('a');
+                                link.href = '/load_template/' + template.id;
+                                link.textContent = template.name;
+                                link.style.display = 'block';
+                                link.style.padding = '8px 12px';
+                                link.style.textDecoration = 'none';
+                                link.style.color = '#007bff';
+                                link.onmouseover = function() { this.style.backgroundColor = '#f0f0f0'; };
+                                link.onmouseout = function() { this.style.backgroundColor = 'transparent'; };
+                                listItem.appendChild(link);
+                                templateList.appendChild(listItem);
 
                                 // Rellenar desplegable de borrado
-                                templates.forEach(template => {
-                                    const option = document.createElement('option');
-                                    option.value = template.id;
-                                    option.textContent = template.name;
-                                    deleteSelect.appendChild(option);
-                                });
-                                deleteSelect.style.display = 'inline-block';
-                                deleteBtn.style.display = 'inline-block';
-
-                            } else {
-                                templateList.innerHTML = '<li style="padding: 8px;">No se encontraron plantillas en la carpeta "Newsletter_Templates" de Google Drive.</li>';
-                                deleteSelect.style.display = 'none';
-                                deleteBtn.style.display = 'none';
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            templateList.innerHTML = '<li style="padding: 8px; color: red;">Error al cargar las plantillas. Asegúrate de haber iniciado sesión.</li>';
-                        });
-                });
-            }
-
-            if(closeBtn) {
-                closeBtn.onclick = function() {
-                    modal.style.display = "none";
-                }
-            }
-
-            window.onclick = function(event) {
-                if (event.target == modal) {
-                    modal.style.display = "none";
-                }
-            }
-
-            if (deleteBtn) {
-                deleteBtn.addEventListener('click', function() {
-                    const selectedId = deleteSelect.value;
-                    const selectedName = deleteSelect.options[deleteSelect.selectedIndex].text;
-
-                    if (!selectedId) {
-                        alert("No hay ninguna plantilla seleccionada para borrar.");
-                        return;
-                    }
-
-                    if (confirm(`¿Estás seguro de que quieres borrar la plantilla "${selectedName}"? Esta acción no se puede deshacer.`)) {
-                        fetch(`/delete_template/${selectedId}`, { method: 'DELETE' })
-                            .then(response => response.json())
-                            .then(data => {
-                                alert(data.message || `Error: ${data.error}`);
-                                if (data.success) {
-                                    // Forzar recarga de la lista de plantillas para reflejar el cambio
-                                    loadBtn.click(); // Abre el modal para recargar la lista
-                                    modal.style.display = 'none'; // y lo cierra inmediatamente
-                                }
+                                const option = document.createElement('option');
+                                option.value = template.id;
+                                option.textContent = template.name;
+                                deleteSelect.appendChild(option);
                             });
-                    }
-                });
+                            deleteSelect.style.display = 'inline-block';
+                            deleteBtn.style.display = 'inline-block';
+                        } else {
+                            templateList.innerHTML = '<li style="padding: 8px;">No se encontraron plantillas.</li>';
+                            deleteSelect.style.display = 'none';
+                            deleteBtn.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        templateList.innerHTML = '<li style="padding: 8px; color: red;">Error al cargar plantillas.</li>';
+                        deleteSelect.style.display = 'none';
+                        deleteBtn.style.display = 'none';
+                    });
             }
+
+            // --- Event Listeners ---
+
+            loadBtn.addEventListener('click', function() {
+                templateList.innerHTML = '<li style="padding: 8px;">Cargando...</li>';
+                modal.style.display = 'block';
+                fetchTemplates(); // Re-fetch para asegurar que esté actualizado
+            });
+
+            closeBtn.onclick = () => { modal.style.display = "none"; };
+            window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
+
+            deleteBtn.addEventListener('click', function() {
+                const selectedId = deleteSelect.value;
+                const selectedName = deleteSelect.options[deleteSelect.selectedIndex].text;
+                if (!selectedId) return;
+
+                templateIdToDelete = selectedId;
+                deleteModalText.textContent = `¿Estás seguro de que quieres borrar la plantilla "${selectedName}"? Esta acción no se puede deshacer.`;
+                deleteConfirmModal.style.opacity = '1';
+                deleteConfirmModal.style.visibility = 'visible';
+            });
+
+            deleteCancelBtn.onclick = () => {
+                deleteConfirmModal.style.opacity = '0';
+                deleteConfirmModal.style.visibility = 'hidden';
+                templateIdToDelete = null;
+            };
+
+            deleteConfirmBtn.addEventListener('click', function() {
+                if (!templateIdToDelete) return;
+
+                fetch(`/delete_template/${templateIdToDelete}`, { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message || `Error: ${data.error}`);
+                        if (data.success) {
+                            fetchTemplates(); // Recargar la lista
+                        }
+                    });
+                
+                deleteCancelBtn.onclick(); // Cerrar modal
+            });
+
+            // Cargar plantillas al inicio si el usuario está conectado
+            {% if credentials_exist %}
+                fetchTemplates();
+            {% endif %}
         });
         </script>
 
@@ -1161,6 +1219,13 @@
             });
         }
     </script>
+
+    <!-- Cargar plantillas al inicio si el usuario está conectado -->
+    {% if credentials_exist %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() { fetchTemplates(); });
+    </script>
+    {% endif %}
 
 </body>
 </html>
