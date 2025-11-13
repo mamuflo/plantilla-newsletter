@@ -400,6 +400,10 @@
                 <div class="button-container" style="margin: 1em 0;">
                     <button type="button" class="upload-button" onclick="uploadAllImages()">Subir Todas las Imágenes Seleccionadas</button>
                 </div>
+                <div class="button-container" style="margin: 1em 0;">
+                    <!-- Nuevo botón para revisar imágenes -->
+                    <button type="button" class="upload-button" style="background-color: #6c757d;" onclick="reviewImages()">Revisar Imágenes de la Carpeta</button>
+                </div>
 
                 <h4>Vídeo (subir a YouTube)</h4>
                 <div class="resource-item">
@@ -566,11 +570,17 @@
 
         <fieldset>
             <legend>8. Pie de Página</legend>
+            <label for="footer_text_main">Texto Principal del Pie de Página:</label>
+            <textarea id="footer_text_main" name="footer_text_main">{{ form_data.footer_text_main | default('<strong>CITED - Centro de Innovación y Tecnología Educativa</strong><br>Consejería de Educación, Formación Profesional y Universidades<br>Gobierno de Cantabria') }}</textarea>
+
             <label for="footer_web_link">Enlace Web del Pie de Página:</label>
             <input type="text" id="footer_web_link" name="footer_web_link" value="{{ form_data.footer_web_link | default('https://educantabria.es/web/cited') }}">
 
             <label for="footer_web_text">Texto del Enlace Web del Pie de Página:</label>
             <input type="text" id="footer_web_text" name="footer_web_text" value="{{ form_data.footer_web_text | default('educantabria.es/web/cited') }}">
+
+            <label for="footer_legal_text">Texto Legal/Secundario del Pie de Página:</label>
+            <textarea id="footer_legal_text" name="footer_legal_text">{{ form_data.footer_legal_text | default('Has recibido este correo como miembro de la comunidad educativa.') }}</textarea>
         </fieldset>
 
         <div class="button-container">
@@ -927,6 +937,19 @@
                     resolve({ success: false, file: file.name, error: error.message });
                 });
             });
+        }
+
+        function reviewImages() {
+            const folderId = document.getElementById('drive_folder_id').value;
+            if (!folderId) {
+                alert("Por favor, selecciona una carpeta primero.");
+                return;
+            }
+            // Cambiamos la acción del formulario y el método para enviar los datos a la página de gestión
+            const form = document.querySelector('form');
+            form.action = "{{ url_for('manage_images_view') }}";
+            form.method = 'post';
+            form.submit();
         }
 
         async function uploadSingleImageFromInput(fileInputId) {

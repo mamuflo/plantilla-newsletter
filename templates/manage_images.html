@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionar Imágenes de la Carpeta</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+        body { 
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #f7f9fc;
+            margin: 0;
+            padding: 2em;
+            color: #333;
+        }
+        h1 { 
+            color: #003366; 
+            text-align: center;
+            margin-bottom: 1em;
+        }
+        .controls {
+            text-align: center;
+            margin-bottom: 2em;
+        }
+        .button {
+            background-color: #6c757d; 
+            color: white; 
+            padding: 12px 25px; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 1em; 
+            font-weight: 700;
+            cursor: pointer; 
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #5a6268;
+        }
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5em;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .image-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        .image-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background-color: #eee;
+        }
+        .image-card-info {
+            padding: 1em;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .image-card-info p {
+            margin: 0 0 1em 0;
+            word-break: break-all;
+            font-size: 0.9em;
+            flex-grow: 1;
+        }
+        .image-card-actions {
+            display: flex;
+            gap: 0.5em;
+        }
+        .image-card-actions .button {
+            flex-grow: 1;
+            padding: 8px;
+            font-size: 0.8em;
+        }
+        .delete-button {
+            background-color: #dc3545;
+        }
+        .delete-button:hover {
+            background-color: #c82333;
+        }
+        .download-button {
+            background-color: #007bff;
+        }
+        .download-button:hover {
+            background-color: #0069d9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gestionar Imágenes</h1>
+    <div class="controls">
+        <form id="back-form" action="{{ url_for('index') }}" method="post" style="display: none;">
+            {% for key, value in form_data.items() %}
+                <input type="hidden" name="{{ key }}" value="{{ value }}">
+            {% endfor %}
+        </form>
+        <button type="button" class="button" onclick="document.getElementById('back-form').submit();">Volver al Formulario</button>
+    </div>
+
+    <div id="image-grid" class="image-grid">
+        {% if images %}
+            {% for image in images %}
+            <div class="image-card" id="image-card-{{ image.id }}">
+                <img src="{{ image.url }}" alt="{{ image.name }}">
+                <div class="image-card-info">
+                    <p>{{ image.name }}</p>
+                    <div class="image-card-actions">
+                        <a href="{{ image.url }}" download="{{ image.name }}" class="button download-button">Descargar</a>
+                        <button type="button" class="button delete-button" onclick="deleteImage('{{ image.id }}')">Eliminar</button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No se encontraron imágenes en esta carpeta.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        function deleteImage(imageId) {
+            if (!confirm("¿Estás seguro de que quieres eliminar esta imagen permanentemente de Google Drive? Esta acción no se puede deshacer.")) {
+                return;
+            }
+
+            const card = document.getElementById(`image-card-${imageId}`);
+            const deleteButton = card.querySelector('.delete-button');
+            const originalButtonText = deleteButton.textContent;
+
+            deleteButton.textContent = "Eliminando...";
+            deleteButton.disabled = true;
+
+            fetch(`/delete_image/${imageId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.error || 'Error en el servidor') });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    card.style.transition = 'opacity 0.5s';
+                    card.style.opacity = '0';
+                    setTimeout(() => card.remove(), 500);
+                } else {
+                    throw new Error(data.error || 'Ocurrió un error desconocido.');
+                }
+            })
+            .catch(error => {
+                console.error('Error al eliminar la imagen:', error);
+                alert(`No se pudo eliminar la imagen: ${error.message}`);
+                deleteButton.textContent = originalButtonText;
+                deleteButton.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>

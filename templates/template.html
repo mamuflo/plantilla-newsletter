@@ -80,8 +80,8 @@
                     <tr class="main-bg" bgcolor="{% if bg_type == 'solid' %}{{ bg_color }}{% else %}{{ bg_color_1 }}{% endif %}">
                         <td style="padding: 30px;" class="main-content">
                             <h1 style="font-size: {{ title_font_size|default('24px') }}; font-weight: bold; margin: 0 0 20px 0; color: {{ title_color }}; font-family: {{ font_family }};">{{ intro_title | safe }}</h1>
-                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px; color: {{ text_color }}; font-family: {{ font_family }};">{{ intro_p1 | safe | replace('<strong>', '<strong style="color: ' + text_color + '; font-family: ' + font_family + ';">') }}</p>
-                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px; color: {{ text_color }}; font-family: {{ font_family }};">{{ intro_p2 | safe | replace('<strong>', '<strong style="color: ' + text_color + '; font-family: ' + font_family + ';">') }}</p>
+                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px; color: {{ text_color }}; font-family: {{ font_family }};">{{ intro_p1 | safe | replace('<strong>', '<strong style="color: ' ~ text_color ~ '; font-family: ' ~ font_family ~ ';">') }}</p>
+                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px; color: {{ text_color }}; font-family: {{ font_family }};">{{ intro_p2 | safe | replace('<strong>', '<strong style="color: ' ~ text_color ~ '; font-family: ' ~ font_family ~ ';">') }}</p>
                         </td>
                     </tr>
 
@@ -91,7 +91,7 @@
                         <td style="padding: 20px 30px 0 30px;" class="main-content">
                             <img src="{{ section.img_src }}" alt="{{ section.img_alt }}" style="width: 100%; max-width: 540px; height: auto; display: block; border-radius: 5px; margin-bottom: 15px;" class="responsive-img">
                             <h2 style="font-size: {{ title_font_size|default('20px') }}; margin: 0 0 15px 0; color: {{ title_color }}; font-family: {{ font_family }};">{{ section.title | safe }}</h2>
-                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px; color: {{ text_color }}; font-family: {{ font_family }};">{{ section.p | safe | replace('<strong>', '<strong style="color: ' + text_color + '; font-family: ' + font_family + ';">') }}</p>
+                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px; color: {{ text_color }}; font-family: {{ font_family }};">{{ section.p | safe | replace('<strong>', '<strong style="color: ' ~ text_color ~ '; font-family: ' ~ font_family ~ ';">') }}</p>
                             
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="text-align: center; padding: 10px 0 20px 0; margin: 0 auto;">
                                 <tr>
@@ -108,7 +108,7 @@
                     <tr class="main-bg" bgcolor="{% if bg_type == 'solid' %}{{ bg_color }}{% else %}{{ bg_color_1 }}{% endif %}">
                         <td style="padding: 30px 30px 0 30px;" class="main-content">
                             <h2 style="font-size: {{ title_font_size|default('20px') }}; margin: 0 0 15px 0; color: {{ title_color }}; font-family: {{ font_family }};">{{ video_title | safe }}</h2>
-                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px; color: {{ text_color }}; font-family: {{ font_family }};">{{ video_p | safe | replace('<strong>', '<strong style="color: ' + text_color + '; font-family: ' + font_family + ';">') }}</p>
+                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px; color: {{ text_color }}; font-family: {{ font_family }};">{{ video_p | safe | replace('<strong>', '<strong style="color: ' ~ text_color ~ '; font-family: ' ~ font_family ~ ';">') }}</p>
                         </td>
                     </tr>
                     <tr class="main-bg" bgcolor="{% if bg_type == 'solid' %}{{ bg_color }}{% else %}{{ bg_color_1 }}{% endif %}">
@@ -121,19 +121,11 @@
 
                     <tr>
                         <td align="center" style="padding: 30px; text-align: center; background-color: #f9f9f9; font-size: 12px; color: #777777;" class="header-footer footer-text">
-                            <p style="font-size: 12px; margin: 0 0 10px 0; color: {{ text_color | default('#777777') }}; font-family: {{ font_family }};">
-                                <strong>CITED - Centro de Innovación y Tecnología Educativa</strong><br>
-                                Consejería de Educación, Formación Profesional y Universidades<br>
-                                Gobierno de Cantabria
-                            </p>
-                            <p style="font-size: 12px; margin: 0 0 10px 0; color: {{ text_color | default('#777777') }}; font-family: {{ font_family }};">
-                            </p>
+                            <p style="font-size: 12px; margin: 0 0 10px 0; color: {{ text_color | default('#777777') }}; font-family: {{ font_family }};">{{ footer_text_main | safe }}</p>
                             <p style="font-size: 12px; margin: 0 0 10px 0; color: {{ text_color | default('#777777') }}; font-family: {{ font_family }};">
                                 Visita nuestra web: <a href="{{ footer_web_link }}" target="_blank" style="color: #005a9e; text-decoration: underline;">{{ footer_web_text }}</a>
                             </p>
-                            <p style="font-size: 10px; color: {{ text_color | default('#999') }}; margin: 0 0 10px 0; font-family: {{ font_family }};">
-                                Has recibido este correo como miembro de la comunidad educativa. 
-                            </p>
+                            <p style="font-size: 10px; color: {{ text_color | default('#999') }}; margin: 0 0 10px 0; font-family: {{ font_family }};">{{ footer_legal_text | safe }}</p>
                         </td>
                     </tr>
 
