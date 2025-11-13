@@ -23,6 +23,10 @@
         .copy-button-container {
             text-align: center;
             margin-bottom: 20px;
+            display: flex; /* Usamos flex para alinear botones */
+            justify-content: center;
+            gap: 10px; /* Espacio entre botones */
+            flex-wrap: wrap; /* Para que se apilen en móvil */
         }
         .copy-button {
             background-color: #005a9e;
@@ -57,6 +61,7 @@
             }
             .copy-button {
                 width: 100%;
+                box-sizing: border-box; /* Para que el padding no desborde el ancho */
                 padding: 20px;
             }
         }
@@ -66,8 +71,25 @@
 <body style="margin: 0; padding: 20px; background-color: #f4f4f4; font-family: Arial, sans-serif;">
 
     <div class="copy-button-container">
+        <!-- Formulario para volver atrás con los datos. Reemplaza 'formulario' con el nombre de tu ruta Flask -->
+        <form action="{{ url_for('formulario') }}" method="post" style="margin: 0;">
+            <!-- Campos ocultos para mantener los datos. Debes añadir un input por cada campo de tu formulario. -->
+            <!-- Ejemplo: <input type="hidden" name="titulo_principal" value="{{ titulo_principal }}"> -->
+            <!-- Ejemplo: <input type="hidden" name="texto_intro" value="{{ texto_intro }}"> -->
+            <!-- ... añade aquí todos los campos ... -->
+
+            <button type="submit" class="copy-button" style="background-color: #555; width: auto;">Volver al Formulario</button>
+        </form>
         <button onclick="copyNewsletter()" class="copy-button">Copiar Newsletter para pegar en Outlook</button>
     </div>
+
+    <!-- NOTA PARA EL DESARROLLADOR: 
+        Asegúrate de que tu vista de Django que renderiza esta plantilla pase todas las variables 
+        del formulario (ej: 'titulo_principal', 'texto_intro', etc.) para que el formulario de "Volver" funcione.
+        Además, reemplaza el contenido estático de esta plantilla con tus variables de Django. Por ejemplo:
+        <h1 style="...">{{ titulo_principal }}</h1>
+        <p style="...">{{ texto_intro }}</p>
+    -->
 
     <div id="newsletter-content">
         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f4f4f4">
@@ -98,7 +120,7 @@
                         <!-- 3. Contenido Principal (Texto Intro) -->
                         <tr>
                             <td style="padding: 30px; font-family: Arial, sans-serif; color: #333333;" class="main-content">
-                                <h1 style="font-size: 24px; font-weight: bold; color: #003366; margin: 0 0 20px 0;">Descubre el CITED: Tu Futuro Empieza Aquí</h1>
+                                <h1 style="font-size: 24px; font-weight: bold; color: #003366; margin: 0 0 20px 0;">Descubre el CITED: Tu Futuro Empieza Aquí</h1> <!-- Ejemplo: {{ titulo_principal }} -->
                                 <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px;">El <strong>Centro de Innovación y Tecnología Educativa de Cantabria (CITED)</strong> es tu punto de referencia para la transformación digital en la educación. </p>
                                 <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px;">Explora nuestras nuevas líneas de formación, programas, recursos y proyectos diseñados para <strong>docentes</strong> que buscan innovar en el aula.</p>
                             </td>
