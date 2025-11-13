@@ -868,6 +868,13 @@
                 const successfulUploads = results.filter(r => r.success).length;
                 const failedUploads = results.length - successfulUploads;
 
+                // Resetear los inputs de archivo que tuvieron éxito
+                results.forEach((result, index) => {
+                    if (result.success) {
+                        filesToUpload[index].value = null; // ¡Esta línea resetea el campo del archivo!
+                    }
+                });
+
                 let message = `${successfulUploads} de ${results.length} imágenes nuevas subidas con éxito.`;
                 if (failedUploads > 0) {
                     message += `\n${failedUploads} subidas fallaron. Revisa la consola para más detalles.`;
