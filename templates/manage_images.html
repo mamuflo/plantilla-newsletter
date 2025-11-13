@@ -91,6 +91,41 @@
         .download-button:hover {
             background-color: #0069d9;
         }
+
+        /* Estilos para el Modal de Confirmación */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 2em;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        .modal-content p {
+            margin-top: 0;
+            margin-bottom: 1.5em;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1em;
+        }
     </style>
 </head>
 <body>
@@ -118,12 +153,46 @@
         {% endif %}
     </div>
 
-    <script>
-        function deleteImage(imageId) {
-            if (!confirm("¿Estás seguro de que quieres eliminar esta imagen permanentemente de Google Drive? Esta acción no se puede deshacer.")) {
-                return;
-            }
+    <!-- Modal de Confirmación -->
+    <div id="confirm-modal" class="modal-overlay">
+        <div class="modal-content">
+            <p id="modal-text">¿Estás seguro de que quieres eliminar esta imagen permanentemente de Google Drive? Esta acción no se puede deshacer.</p>
+            <div class="modal-actions">
+                <button id="modal-cancel-btn" class="button">Cancelar</button>
+                <button id="modal-confirm-btn" class="button delete-button">Confirmar</button>
+            </div>
+        </div>
+    </div>
 
+    <script>
+        const confirmModal = document.getElementById('confirm-modal');
+        const cancelBtn = document.getElementById('modal-cancel-btn');
+        const confirmBtn = document.getElementById('modal-confirm-btn');
+        let currentImageIdToDelete = null;
+
+        cancelBtn.addEventListener('click', () => {
+            closeConfirmModal();
+        });
+
+        confirmBtn.addEventListener('click', () => {
+            if (currentImageIdToDelete) {
+                executeDelete(currentImageIdToDelete);
+            }
+            closeConfirmModal();
+        });
+
+        function closeConfirmModal() {
+            confirmModal.style.opacity = '0';
+            confirmModal.style.visibility = 'hidden';
+        }
+
+        function deleteImage(imageId) {
+            currentImageIdToDelete = imageId;
+            confirmModal.style.opacity = '1';
+            confirmModal.style.visibility = 'visible';
+        }
+
+        function executeDelete(imageId) {
             const card = document.getElementById(`image-card-${imageId}`);
             const deleteButton = card.querySelector('.delete-button');
             const originalButtonText = deleteButton.textContent;
@@ -131,34 +200,26 @@
             deleteButton.textContent = "Eliminando...";
             deleteButton.disabled = true;
 
-            fetch(`/delete_image/${imageId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => { throw new Error(err.error || 'Error en el servidor') });
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    alert(data.message);
-                    card.style.transition = 'opacity 0.5s';
-                    card.style.opacity = '0';
-                    setTimeout(() => card.remove(), 500);
-                } else {
-                    throw new Error(data.error || 'Ocurrió un error desconocido.');
-                }
-            })
-            .catch(error => {
-                console.error('Error al eliminar la imagen:', error);
-                alert(`No se pudo eliminar la imagen: ${error.message}`);
-                deleteButton.textContent = originalButtonText;
-                deleteButton.disabled = false;
-            });
+            fetch(`/delete_image/${imageId}`, { method: 'POST' })
+                .then(response => response.json().then(data => ({ ok: response.ok, data })))
+                .then(({ ok, data }) => {
+                    if (ok && data.success) {
+                        card.style.transition = 'opacity 0.5s, transform 0.5s';
+                        card.style.opacity = '0';
+                        card.style.transform = 'scale(0.9)';
+                        setTimeout(() => card.remove(), 500);
+                    } else {
+                        throw new Error(data.error || 'Ocurrió un error desconocido.');
+                    }
+                })
+                .catch(error => {
+                    alert(`No se pudo eliminar la imagen: ${error.message}`);
+                })
+                .finally(() => {
+                    deleteButton.textContent = originalButtonText;
+                    deleteButton.disabled = false;
+                    currentImageIdToDelete = null;
+                });
         }
     </script>
 </body>
