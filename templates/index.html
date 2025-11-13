@@ -548,6 +548,9 @@
             <label for="text_color">Color de los Párrafos:</label>
             <input type="color" id="text_color" name="text_color" value="{{ form_data.text_color|default('#555555') }}">
 
+            <label for="button_color">Color de los Botones:</label>
+            <input type="color" id="button_color" name="button_color" value="{{ form_data.button_color|default('#005a9e') }}">
+
             <label for="font_family">Tipo de Fuente:</label>
             <select id="font_family" name="font_family">
                 <option value="Arial, sans-serif" {% if form_data.font_family == 'Arial, sans-serif' %}selected{% endif %}>Arial</option>
