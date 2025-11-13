@@ -617,11 +617,6 @@
                 }
             });
 
-            // Si el usuario está conectado, carga las carpetas de Drive
-            if (document.getElementById('upload-section').style.display !== 'none') {
-                fetchDriveFolders();
-            }
-
             // Event listener para el dropdown de carpetas
             document.getElementById('drive_folder_select').addEventListener('change', function() {
                 document.getElementById('drive_folder_id').value = this.value;
@@ -637,6 +632,11 @@
                         addSection(section);
                     }
                 });
+            }
+
+            // Si el usuario está conectado, carga las carpetas de Drive.
+            if (document.getElementById('upload-section').style.display !== 'none') {
+                fetchDriveFolders(); // Esto ahora se encargará de llamar a updateImageSelectors
             }
         });
 
@@ -667,8 +667,9 @@
                     });
                     // Asegurarse de que el hidden input tenga el valor correcto al cargar
                     if (select.value) {
-                         document.getElementById('drive_folder_id').value = select.value;
-                         updateImageSelectors(select.value);
+                        const selectedFolderId = select.value;
+                        document.getElementById('drive_folder_id').value = selectedFolderId;
+                        updateImageSelectors(selectedFolderId); // Llamar a la actualización de imágenes DESPUÉS de tener la carpeta
                     }
                 })
                 .catch(error => {
