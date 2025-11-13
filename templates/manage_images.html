@@ -96,12 +96,7 @@
 <body>
     <h1>Gestionar Imágenes</h1>
     <div class="controls">
-        <form id="back-form" action="{{ url_for('index') }}" method="post" style="display: none;">
-            {% for key, value in form_data.items() %}
-                <input type="hidden" name="{{ key }}" value="{{ value }}">
-            {% endfor %}
-        </form>
-        <button type="button" class="button" onclick="document.getElementById('back-form').submit();">Volver al Formulario</button>
+        <a href="{{ url_for('index') }}" class="button">Volver al Formulario</a>
     </div>
 
     <div id="image-grid" class="image-grid">
