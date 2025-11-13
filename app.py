@@ -276,6 +276,7 @@ def index():
             'bg_color_2': request.form.get('bg_color_2'),
             'title_color': request.form.get('title_color'),
             'text_color': request.form.get('text_color'),
+            'button_color': request.form.get('button_color'),
             'font_family': request.form.get('font_family'),
             'title_font_size': request.form.get('title_font_size'),
             'sections': []
