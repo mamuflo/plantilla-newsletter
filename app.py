@@ -23,6 +23,21 @@ SCOPES = [
 API_SERVICE_NAME = 'youtube'
 API_VERSION = 'v3'
 
+def get_drive_service():
+    """
+    Verifica las credenciales en la sesión y devuelve una instancia del servicio de Drive.
+    Devuelve (None, error_response) si no está autenticado.
+    """
+    if 'credentials' not in session:
+        return None, jsonify({'error': 'Not authenticated'}), 401
+    
+    try:
+        credentials = google.oauth2.credentials.Credentials(**session['credentials'])
+        drive_service = build('drive', 'v3', credentials=credentials)
+        return drive_service, None, None
+    except Exception as e:
+        return None, jsonify({'error': 'Invalid credentials', 'details': str(e)}), 401
+
 @app.route('/authorize')
 def authorize():
     if os.path.exists(CLIENT_SECRETS_FILE):
@@ -82,11 +97,9 @@ def credentials_to_dict(credentials):
 
 @app.route('/get_or_create_folder', methods=['POST'])
 def get_or_create_folder():
-    if 'credentials' not in session:
-        return jsonify({'error': 'Not authenticated'}), 401
-
-    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
-    drive_service = build('drive', 'v3', credentials=credentials)
+    drive_service, error_response, status_code = get_drive_service()
+    if error_response:
+        return error_response, status_code
 
     folder_name = request.form.get('folderName')
     if not folder_name:
@@ -112,11 +125,9 @@ def get_or_create_folder():
 
 @app.route('/upload_image', methods=['POST'])
 def upload_image():
-    if 'credentials' not in session:
-        return jsonify({'error': 'Not authenticated'}), 401
-    
-    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
-    drive_service = build('drive', 'v3', credentials=credentials)
+    drive_service, error_response, status_code = get_drive_service()
+    if error_response:
+        return error_response, status_code
     
     file = request.files['file']
     folder_id = request.form.get('folderId')
@@ -165,8 +176,10 @@ def upload_video():
     if 'credentials' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
 
+    # Esta función necesita las credenciales, no el servicio de Drive
     credentials = google.oauth2.credentials.Credentials(**session['credentials'])
     youtube_service = build(API_SERVICE_NAME, API_VERSION, credentials=credentials)
+    drive_service = build('drive', 'v3', credentials=credentials) # Necesario para obtener el enlace final
 
     file = request.files['file']
     if not file:
@@ -210,19 +223,19 @@ def upload_video():
     if not response:
         return jsonify({'error': 'Failed to upload file to YouTube'}), 500
 
-    # Obtener el enlace público
-    file_data = drive_service.files().get(fileId=file_id, fields='webViewLink').execute()
+    video_id = response.get('id')
+    video_url = "https://www.youtube.com/watch?v={}".format(video_id)
     
-    return jsonify({'url': file_data['webViewLink']})
+    return jsonify({'url': video_url})
 
 @app.route('/delete_image/<image_id>', methods=['POST'])
 def delete_image(image_id):
-    if 'credentials' not in session:
-        return jsonify({'error': 'Not authenticated'}), 401
+    drive_service, error_response, status_code = get_drive_service()
+    if error_response:
+        return error_response, status_code
 
-    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
-    drive_service = build('drive', 'v3', credentials=credentials)
-
+    if not image_id:
+        return jsonify({'error': 'Image ID is required'}), 400
     try:
         drive_service.files().delete(fileId=image_id).execute()
         return jsonify({'success': True, 'message': 'Imagen eliminada con éxito.'})
@@ -240,11 +253,9 @@ def delete_image(image_id):
 
 @app.route('/list_drive_folders', methods=['GET'])
 def list_drive_folders():
-    if 'credentials' not in session:
-        return jsonify({'error': 'Not authenticated'}), 401
-
-    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
-    drive_service = build('drive', 'v3', credentials=credentials)
+    drive_service, error_response, status_code = get_drive_service()
+    if error_response:
+        return error_response, status_code
 
     folders = []
     page_token = None
@@ -333,6 +344,7 @@ def index():
         # Inliner los estilos CSS
         p = Pynliner()
         newsletter_html = p.from_string(newsletter_html).run()
+        session['form_data'] = context # Guardar datos antes de mostrar el resultado
 
         # Devolver la página de resultados con el código de la newsletter
         return render_template('result.html', newsletter_html=newsletter_html)
@@ -345,11 +357,9 @@ def index():
 
 @app.route('/list_images_in_folder/<folder_id>', methods=['GET'])
 def list_images_in_folder(folder_id):
-    if 'credentials' not in session:
-        return jsonify({'error': 'Not authenticated'}), 401
-
-    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
-    drive_service = build('drive', 'v3', credentials=credentials)
+    drive_service, error_response, status_code = get_drive_service()
+    if error_response:
+        return error_response, status_code
 
     images = []
     page_token = None
@@ -385,10 +395,11 @@ def list_images_in_folder(folder_id):
 @app.route('/manage_images/<folder_id>', methods=['GET'])
 def manage_images_page(folder_id):
     if 'credentials' not in session:
-        return redirect(url_for('index'))
+        return redirect(url_for('authorize'))
 
-    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
-    drive_service = build('drive', 'v3', credentials=credentials)
+    drive_service, error_response, status_code = get_drive_service()
+    if error_response: # Si las credenciales son inválidas, redirige
+        return redirect(url_for('authorize'))
     images = []
     try:
         response = drive_service.files().list(
@@ -412,9 +423,8 @@ def manage_images_page(folder_id):
 
 @app.route('/save_template', methods=['POST'])
 def save_template():
-    if 'credentials' not in session:
-        return jsonify({'error': 'Not authenticated'}), 401
-    if 'form_data' not in session:
+    drive_service, error_response, status_code = get_drive_service()
+    if error_response or 'form_data' not in session:
         return jsonify({'error': 'No form data to save'}), 400
 
     data = request.get_json()
@@ -425,9 +435,6 @@ def save_template():
     # Asegurarse de que el nombre del archivo termine en .json
     if not filename.endswith('.json'):
         filename += '.json'
-
-    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
-    drive_service = build('drive', 'v3', credentials=credentials)
 
     # 1. Buscar o crear la carpeta "Newsletter_Templates"
     folder_name = "Newsletter_Templates"
@@ -462,11 +469,9 @@ def save_template():
 
 @app.route('/list_templates', methods=['GET'])
 def list_templates():
-    if 'credentials' not in session:
-        return jsonify({'error': 'Not authenticated'}), 401
-
-    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
-    drive_service = build('drive', 'v3', credentials=credentials)
+    drive_service, error_response, status_code = get_drive_service()
+    if error_response:
+        return error_response, status_code
 
     # Buscar la carpeta "Newsletter_Templates"
     folder_name = "Newsletter_Templates"
@@ -487,11 +492,10 @@ def list_templates():
 @app.route('/load_template/<template_id>', methods=['GET'])
 def load_template(template_id):
     if 'credentials' not in session:
+        return redirect(url_for('authorize')) # Redirige a login si no hay sesión
+    drive_service, error_response, status_code = get_drive_service()
+    if error_response: # Redirige a login si las credenciales son inválidas
         return redirect(url_for('authorize'))
-
-    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
-    drive_service = build('drive', 'v3', credentials=credentials)
-
     try:
         # Forma actualizada y más simple de descargar el contenido del archivo
         file_content = drive_service.files().get_media(fileId=template_id).execute()
@@ -507,12 +511,9 @@ def load_template(template_id):
 
 @app.route('/delete_template/<template_id>', methods=['DELETE'])
 def delete_template(template_id):
-    if 'credentials' not in session:
-        return jsonify({'error': 'Not authenticated'}), 401
-
-    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
-    drive_service = build('drive', 'v3', credentials=credentials)
-
+    drive_service, error_response, status_code = get_drive_service()
+    if error_response:
+        return error_response, status_code
     try:
         drive_service.files().delete(fileId=template_id).execute()
         return jsonify({'success': True, 'message': 'Plantilla eliminada con éxito.'})
