@@ -648,6 +648,82 @@
             if (document.getElementById('upload-section').style.display !== 'none') {
                 fetchDriveFolders(); // Esto ahora se encargará de llamar a updateImageSelectors
             }
+<!-- ... tu código existente del formulario ... -->
+
+<!-- Botón y Modal para Cargar Plantillas -->
+<div style="margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;">
+    <button type="button" id="load-template-btn" style="padding: 10px 15px; font-size: 1em;">Cargar Plantilla desde Drive</button>
+</div>
+
+<!-- El Modal (inicialmente oculto) -->
+<div id="template-modal" style="display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+    <div style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 8px;">
+        <span id="close-modal-btn" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+        <h4>Selecciona una plantilla para cargar:</h4>
+        <ul id="template-list" style="list-style-type: none; padding: 0;">
+            <!-- La lista de plantillas se insertará aquí dinámicamente -->
+        </ul>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loadBtn = document.getElementById('load-template-btn');
+    const modal = document.getElementById('template-modal');
+    const closeBtn = document.getElementById('close-modal-btn');
+    const templateList = document.getElementById('template-list');
+
+    loadBtn.addEventListener('click', function() {
+        templateList.innerHTML = '<li style="padding: 8px;">Cargando plantillas...</li>';
+        modal.style.display = 'block';
+
+        fetch('/list_templates')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error de autenticación o del servidor.');
+                }
+                return response.json();
+            })
+            .then(templates => {
+                templateList.innerHTML = ''; // Limpiar el mensaje de carga
+                if (templates.length > 0) {
+                    templates.forEach(template => {
+                        const listItem = document.createElement('li');
+                        const link = document.createElement('a');
+                        link.href = '/load_template/' + template.id;
+                        link.textContent = template.name;
+                        link.style.display = 'block';
+                        link.style.padding = '8px 12px';
+                        link.style.textDecoration = 'none';
+                        link.style.color = '#007bff';
+                        link.onmouseover = function() { this.style.backgroundColor = '#f0f0f0'; };
+                        link.onmouseout = function() { this.style.backgroundColor = 'transparent'; };
+                        listItem.appendChild(link);
+                        templateList.appendChild(listItem);
+                    });
+                } else {
+                    templateList.innerHTML = '<li style="padding: 8px;">No se encontraron plantillas en la carpeta "Newsletter_Templates" de Google Drive.</li>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                templateList.innerHTML = '<li style="padding: 8px; color: red;">Error al cargar las plantillas. Asegúrate de haber iniciado sesión.</li>';
+            });
+    });
+
+    closeBtn.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+});
+</script>
+
+<!-- Justo después de esto debería empezar tu etiqueta <form> -->
         });
 
         function fetchDriveFolders() {

@@ -164,6 +164,49 @@
     <div class="controls">
         <a href="/" class="button secondary">Volver al Formulario</a>
         <button id="copyButton" class="button">Copiar para Outlook</button>
+<!-- ... tu código existente de la vista previa ... -->
+
+<div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000;">
+    <button id="save-template-btn" style="padding: 12px 25px; font-size: 16px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+        Guardar Plantilla en Drive
+    </button>
+</div>
+
+<script>
+document.getElementById('save-template-btn').addEventListener('click', function() {
+    // Sugiere un nombre de archivo basado en la fecha y hora actual
+    const d = new Date();
+    const dateString = d.getFullYear() + '-' + ('0'+(d.getMonth()+1)).slice(-2) + '-' + ('0'+d.getDate()).slice(-2);
+    const timeString = ('0'+d.getHours()).slice(-2) + '' + ('0'+d.getMinutes()).slice(-2);
+    const suggestedFilename = 'plantilla-' + dateString + '-' + timeString + '.json';
+
+    const filename = prompt("Por favor, introduce un nombre para la plantilla:", suggestedFilename);
+    
+    if (filename) {
+        fetch('/save_template', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ filename: filename })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+            } else {
+                alert('Error al guardar la plantilla: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ha ocurrido un error de red al intentar guardar la plantilla.');
+        });
+    }
+});
+</script>
+
+<!-- Justo antes de esto debería estar la etiqueta </body> -->
         <button id="copyAndOpenOutlookButton" class="button">Copiar y Abrir en Outlook</button>
     </div>
 
