@@ -214,6 +214,29 @@ def upload_video():
     
     return jsonify({'url': file_data['webViewLink']})
 
+@app.route('/delete_image/<image_id>', methods=['POST'])
+def delete_image(image_id):
+    if 'credentials' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+
+    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
+    drive_service = build('drive', 'v3', credentials=credentials)
+
+    try:
+        drive_service.files().delete(fileId=image_id).execute()
+        return jsonify({'success': True, 'message': 'Imagen eliminada con éxito.'})
+    except Exception as e:
+        print("Error deleting image from Drive: {}".format(e))
+        # Intenta dar un mensaje de error más específico si es posible
+        error_message = str(e)
+        if 'insufficient permissions' in error_message.lower():
+            return jsonify({'error': 'Permisos insuficientes para eliminar el archivo.'}), 403
+        if 'notFound' in error_message:
+            return jsonify({'error': 'El archivo no fue encontrado. Puede que ya haya sido eliminado.'}), 404
+        
+        return jsonify({'error': 'No se pudo eliminar la imagen de Google Drive.'}), 500
+
+
 @app.route('/list_drive_folders', methods=['GET'])
 def list_drive_folders():
     if 'credentials' not in session:
@@ -269,7 +292,9 @@ def index():
             'video_thumbnail_src': request.form.get('video_thumbnail_src'),
             'video_thumbnail_alt': request.form.get('video_thumbnail_alt'),
             'footer_web_link': request.form.get('footer_web_link'),
+            'footer_text_main': request.form.get('footer_text_main'),
             'footer_web_text': request.form.get('footer_web_text'),
+            'footer_legal_text': request.form.get('footer_legal_text'),
             'bg_type': request.form.get('bg_type'),
             'bg_color': request.form.get('bg_color'),
             'bg_color_1': request.form.get('bg_color_1'),
@@ -356,6 +381,13 @@ def list_images_in_folder(folder_id):
         print("Error listing images in folder: {}".format(e))
         return jsonify({'error': 'Failed to list images from Google Drive folder'}), 500
 
+@app.route('/manage_images', methods=['POST'])
+def manage_images_view():
+    # Guardamos los datos del formulario que vienen del POST en la sesión
+    session['form_data'] = request.form.to_dict(flat=True)
+    folder_id = request.form.get('drive_folder_id')
+    # Redirigimos a la página de gestión, pasando el folder_id
+    return redirect(url_for('list_images_in_folder', folder_id=folder_id, _method='GET'))
 
 if __name__ == '__main__':
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
