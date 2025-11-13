@@ -492,15 +492,18 @@ def load_template(template_id):
     credentials = google.oauth2.credentials.Credentials(**session['credentials'])
     drive_service = build('drive', 'v3', credentials=credentials)
 
-    request_file = drive_service.files().get_media(fileId=template_id)
-    fh = io.BytesIO()
-    downloader = googleapiclient.http.MediaIoBaseDownload(fh, request_file)
-    done = False
-    while done is False:
-        status, done = downloader.next_chunk()
-    
-    session['form_data'] = json.loads(fh.getvalue().decode('utf-8'))
-    return redirect(url_for('index'))
+    try:
+        # Forma actualizada y más simple de descargar el contenido del archivo
+        file_content = drive_service.files().get_media(fileId=template_id).execute()
+        
+        # Decodificar el contenido y cargarlo como JSON
+        template_data = json.loads(file_content.decode('utf-8'))
+        session['form_data'] = template_data
+        return redirect(url_for('index'))
+    except Exception as e:
+        print("Error loading template from Drive: {}".format(e))
+        # Aquí podrías redirigir a una página de error o mostrar un flash message
+        return "Error al cargar la plantilla desde Google Drive: {}".format(e), 500
 
 @app.route('/manage_images', methods=['POST'])
 def manage_images_view():
