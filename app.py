@@ -414,6 +414,9 @@ def manage_images_view():
     # Guardamos los datos del formulario que vienen del POST en la sesión
     session['form_data'] = request.form.to_dict(flat=True)
     folder_id = request.form.get('drive_folder_id')
+    if not folder_id:
+        # Si no hay folder_id, no podemos continuar. Volvemos al formulario.
+        return redirect(url_for('index'))
     return redirect(url_for('manage_images_page', folder_id=folder_id))
 
 if __name__ == '__main__':
