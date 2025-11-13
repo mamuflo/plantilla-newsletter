@@ -17,7 +17,8 @@ app.secret_key = os.urandom(24)
 CLIENT_SECRETS_FILE = "client_secret.json"
 SCOPES = [
     'https://www.googleapis.com/auth/drive.file',
-    'https://www.googleapis.com/auth/youtube.upload'
+    'https://www.googleapis.com/auth/youtube.upload',
+    'https://www.googleapis.com/auth/drive.readonly' # Necesario para leer/descargar archivos
 ]
 API_SERVICE_NAME = 'youtube'
 API_VERSION = 'v3'
@@ -408,6 +409,98 @@ def manage_images_page(folder_id):
 
     form_data = session.get('form_data', {})
     return render_template('manage_images.html', images=images, form_data=form_data)
+
+@app.route('/save_template', methods=['POST'])
+def save_template():
+    if 'credentials' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    if 'form_data' not in session:
+        return jsonify({'error': 'No form data to save'}), 400
+
+    data = request.get_json()
+    filename = data.get('filename')
+    if not filename:
+        return jsonify({'error': 'Filename is required'}), 400
+
+    # Asegurarse de que el nombre del archivo termine en .json
+    if not filename.endswith('.json'):
+        filename += '.json'
+
+    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
+    drive_service = build('drive', 'v3', credentials=credentials)
+
+    # 1. Buscar o crear la carpeta "Newsletter_Templates"
+    folder_name = "Newsletter_Templates"
+    query = "mimeType='application/vnd.google-apps.folder' and name='{}' and trashed=false".format(folder_name)
+    response = drive_service.files().list(q=query, spaces='drive', fields='files(id)').execute()
+    files = response.get('files', [])
+
+    if files:
+        folder_id = files[0].get('id')
+    else:
+        file_metadata = {'name': folder_name, 'mimeType': 'application/vnd.google-apps.folder'}
+        folder = drive_service.files().create(body=file_metadata, fields='id').execute()
+        folder_id = folder.get('id')
+
+    # 2. Guardar los datos del formulario como un archivo JSON en esa carpeta
+    template_data = json.dumps(session['form_data'], indent=4)
+    
+    try:
+        # Usar un archivo temporal para la subida
+        with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix='.json', encoding='utf-8') as temp_file:
+            temp_file.write(template_data)
+            temp_file_path = temp_file.name
+
+        media = MediaFileUpload(temp_file_path, mimetype='application/json', resumable=True)
+        file_metadata = {'name': filename, 'parents': [folder_id]}
+        drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+        os.remove(temp_file_path) # Limpiar el archivo temporal
+        return jsonify({'success': True, 'message': 'Plantilla "{}" guardada en Google Drive.'.format(filename)})
+    except Exception as e:
+        print("Error saving template to Drive: {}".format(e))
+        return jsonify({'error': 'Failed to save template to Google Drive'}), 500
+
+@app.route('/list_templates', methods=['GET'])
+def list_templates():
+    if 'credentials' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+
+    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
+    drive_service = build('drive', 'v3', credentials=credentials)
+
+    # Buscar la carpeta "Newsletter_Templates"
+    folder_name = "Newsletter_Templates"
+    query = "mimeType='application/vnd.google-apps.folder' and name='{}' and trashed=false".format(folder_name)
+    response = drive_service.files().list(q=query, spaces='drive', fields='files(id)').execute()
+    if not response.get('files', []):
+        return jsonify([]) # No hay carpeta, por lo tanto no hay plantillas
+
+    folder_id = response.get('files')[0].get('id')
+
+    # Listar archivos .json en la carpeta
+    query = "'{}' in parents and mimeType='application/json' and trashed=false".format(folder_id)
+    response = drive_service.files().list(q=query, spaces='drive', fields='files(id, name)').execute()
+    templates = response.get('files', [])
+    
+    return jsonify(sorted(templates, key=lambda x: x['name'].lower()))
+
+@app.route('/load_template/<template_id>', methods=['GET'])
+def load_template(template_id):
+    if 'credentials' not in session:
+        return redirect(url_for('authorize'))
+
+    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
+    drive_service = build('drive', 'v3', credentials=credentials)
+
+    request_file = drive_service.files().get_media(fileId=template_id)
+    fh = io.BytesIO()
+    downloader = googleapiclient.http.MediaIoBaseDownload(fh, request_file)
+    done = False
+    while done is False:
+        status, done = downloader.next_chunk()
+    
+    session['form_data'] = json.loads(fh.getvalue().decode('utf-8'))
+    return redirect(url_for('index'))
 
 @app.route('/manage_images', methods=['POST'])
 def manage_images_view():
