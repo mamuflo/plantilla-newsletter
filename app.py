@@ -381,13 +381,40 @@ def list_images_in_folder(folder_id):
         print("Error listing images in folder: {}".format(e))
         return jsonify({'error': 'Failed to list images from Google Drive folder'}), 500
 
+@app.route('/manage_images/<folder_id>', methods=['GET'])
+def manage_images_page(folder_id):
+    if 'credentials' not in session:
+        return redirect(url_for('index'))
+
+    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
+    drive_service = build('drive', 'v3', credentials=credentials)
+    images = []
+    try:
+        response = drive_service.files().list(
+            q="'{}' in parents and mimeType contains 'image/' and trashed=false".format(folder_id),
+            spaces='drive',
+            fields='files(id, name)'
+        ).execute()
+        
+        for file in response.get('files', []):
+            file_id = file.get('id')
+            direct_link = "https://lh3.googleusercontent.com/d/{}".format(file_id)
+            images.append({'id': file_id, 'name': file.get('name'), 'url': direct_link})
+        
+        images.sort(key=lambda x: x['name'].lower())
+    except Exception as e:
+        print("Error en manage_images_page: {}".format(e))
+        # Podrías redirigir a una página de error o de vuelta al formulario con un mensaje.
+
+    form_data = session.get('form_data', {})
+    return render_template('manage_images.html', images=images, form_data=form_data)
+
 @app.route('/manage_images', methods=['POST'])
 def manage_images_view():
     # Guardamos los datos del formulario que vienen del POST en la sesión
     session['form_data'] = request.form.to_dict(flat=True)
     folder_id = request.form.get('drive_folder_id')
-    # Redirigimos a la página de gestión, pasando el folder_id
-    return redirect(url_for('list_images_in_folder', folder_id=folder_id, _method='GET'))
+    return redirect(url_for('manage_images_page', folder_id=folder_id))
 
 if __name__ == '__main__':
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
