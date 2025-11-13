@@ -718,13 +718,16 @@
             const newSection = document.createElement('fieldset');
             newSection.id = `section-${sectionId}`;
             newSection.innerHTML = `
-                <legend>Sección ${sectionId}</legend>
-                <button type="button" class="upload-button" style="float: right; margin-top: -4em;" onclick="removeSection(${sectionId})">Eliminar Sección</button>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em;">
+                    <legend style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;">Sección ${sectionId}</legend>
+                    <button type="button" class="upload-button" onclick="removeSection(${sectionId})" style="margin-top: 0; margin-left: 0; padding: 8px 15px; font-size: 0.9em; background-color: #dc3545;">Eliminar Sección</button>
+                </div>
                 
                 <div class="resource-item">
                     <label for="section${sectionId}_img_src_upload" class="resource-label">Imagen (Sección ${sectionId}):</label>
                     <input type="file" id="section${sectionId}_img_src_upload" accept="image/*" data-target-input="section${sectionId}_img_src">
                     <span class="image-selector-placeholder" data-target-input="section${sectionId}_img_src"></span>
+                    <button type="button" class="upload-button" onclick="uploadSingleImageFromInput('section${sectionId}_img_src_upload')" style="margin-left: 10px;">Subir</button>
                 </div>
 
                 <label for="section${sectionId}_img_src">URL de la Imagen (Sección ${sectionId}):</label>
@@ -924,6 +927,45 @@
                     resolve({ success: false, file: file.name, error: error.message });
                 });
             });
+        }
+
+        async function uploadSingleImageFromInput(fileInputId) {
+            const fileInput = document.getElementById(fileInputId);
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert("Por favor, selecciona un archivo de imagen primero.");
+                return;
+            }
+
+            const folderId = document.getElementById('drive_folder_id').value;
+            if (!folderId) {
+                alert("Por favor, primero crea o verifica una carpeta de Google Drive.");
+                return;
+            }
+
+            const targetInputId = fileInput.getAttribute('data-target-input');
+            const uploadButton = fileInput.nextElementSibling.nextElementSibling; // Asumiendo que el botón está después del span
+            const originalButtonText = uploadButton.textContent;
+
+            uploadButton.textContent = "Subiendo...";
+            uploadButton.disabled = true;
+
+            try {
+                const result = await _uploadSingleImage(file, folderId, targetInputId);
+                if (result.success) {
+                    alert(`Imagen '${file.name}' subida con éxito.`);
+                    fileInput.value = null; // Resetear el input de archivo
+                } else {
+                    alert(`Error al subir '${file.name}': ${result.error}`);
+                }
+            } catch (error) {
+                console.error('Error subiendo imagen individual:', error);
+                alert('Ocurrió un error inesperado al subir la imagen.');
+            } finally {
+                uploadButton.textContent = originalButtonText;
+                uploadButton.disabled = false;
+            }
         }
 
         function uploadVideo(fileInputId, targetInputId) {
