@@ -505,6 +505,27 @@ def load_template(template_id):
         # Aquí podrías redirigir a una página de error o mostrar un flash message
         return "Error al cargar la plantilla desde Google Drive: {}".format(e), 500
 
+@app.route('/delete_template/<template_id>', methods=['DELETE'])
+def delete_template(template_id):
+    if 'credentials' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+
+    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
+    drive_service = build('drive', 'v3', credentials=credentials)
+
+    try:
+        drive_service.files().delete(fileId=template_id).execute()
+        return jsonify({'success': True, 'message': 'Plantilla eliminada con éxito.'})
+    except Exception as e:
+        print("Error deleting template from Drive: {}".format(e))
+        error_message = str(e)
+        if 'insufficient permissions' in error_message.lower():
+            return jsonify({'error': 'Permisos insuficientes para eliminar la plantilla.'}), 403
+        if 'notFound' in error_message:
+            return jsonify({'error': 'La plantilla no fue encontrada. Puede que ya haya sido eliminada.'}), 404
+        
+        return jsonify({'error': 'No se pudo eliminar la plantilla de Google Drive.'}), 500
+
 @app.route('/manage_images', methods=['POST'])
 def manage_images_view():
     # Guardamos los datos del formulario que vienen del POST en la sesión
