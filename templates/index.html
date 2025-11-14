@@ -819,12 +819,13 @@
             // Repoblar secciones dinámicas
             if (window.formData && window.formData.sections) {
                 const sectionsData = window.formData.sections;
-                sectionsData.forEach(section => {
-                    const sectionId = parseInt(section.id, 10);
-                    if (sectionId > 2) {
-                        addSection(section);
+                // Empezamos a añadir desde la tercera sección (índice 2)
+                if (sectionsData.length > 2) {
+                    for (let i = 2; i < sectionsData.length; i++) {
+                        // Pasamos los datos de la sección a la función para que los repueble
+                        addSection(sectionsData[i]);
                     }
-                });
+                }
             }
 
             // Si el usuario está conectado, carga las carpetas de Drive.
