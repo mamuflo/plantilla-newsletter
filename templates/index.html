@@ -622,11 +622,11 @@
             <label for="intro_title">Título Principal:</label>
             <input type="text" id="intro_title" name="intro_title" value="{{ form_data.intro_title | default('Descubre el CITED: Tu Futuro Empieza Aquí') }}">
 
-            <label for="intro_p1">Párrafo de Introducción 1 (acepta HTML como &lt;strong&gt;):</label>
+            <label for="intro_p1">Párrafo de Introducción 1:</label>
             <textarea id="intro_p1" name="intro_p1">{{ form_data.intro_p1 | default('El &lt;strong&gt;Centro de Innovación y Tecnología Educativa de Cantabria (CITED)&lt;/strong&gt; es tu punto de referencia para la transformación digital en la educación.') }}</textarea>
 
-            <label for="intro_p2">Párrafo de Introducción 2 (acepta HTML como &lt;strong&gt;):</label>
-            <textarea id="intro_p2" name="intro_p2">{{ form_data.intro_p2 | default('Explora nuestras nuevas líneas de formación, programas, recursos y proyectos diseñados para &lt;strong&gt;docentes&lt;/strong&gt; que buscan innovar en el aula.') }}</textarea>
+            <label for="intro_p2">Párrafo de Introducción 2:</label>
+            <textarea id="intro_p2" name="intro_p2">{{ form_data.intro_p2 | default('Explora nuestras nuevas líneas de formación, programas, recursos y proyectos diseñados para &lt;strong&gt;docentes&lt;/strong&gt; que buscan innovar en el aula.') | safe }}</textarea>
         </fieldset>
 
         <fieldset>
@@ -762,7 +762,7 @@
             <input type="text" id="footer_web_text" name="footer_web_text" value="{{ form_data.footer_web_text | default('educantabria.es/web/cited') }}">
 
             <label for="footer_legal_text">Texto Legal/Secundario del Pie de Página:</label>
-            <textarea id="footer_legal_text" name="footer_legal_text">{{ form_data.footer_legal_text | default('Has recibido este correo como miembro de la comunidad educativa.') }}</textarea>
+            <textarea id="footer_legal_text" name="footer_legal_text">{{ form_data.footer_legal_text | default('Has recibido este correo como miembro de la comunidad educativa.') | safe }}</textarea>
         </fieldset>
 
         <div class="button-container">
