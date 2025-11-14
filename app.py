@@ -179,7 +179,6 @@ def upload_video():
     # Esta función necesita las credenciales, no el servicio de Drive
     credentials = google.oauth2.credentials.Credentials(**session['credentials'])
     youtube_service = build(API_SERVICE_NAME, API_VERSION, credentials=credentials)
-    drive_service = build('drive', 'v3', credentials=credentials) # Necesario para obtener el enlace final
 
     file = request.files['file']
     if not file:
@@ -205,7 +204,11 @@ def upload_video():
             }
         }
 
-        media = MediaFileUpload(temp_file_path, chunksize=-1, resumable=True)
+        media = MediaFileUpload(
+            temp_file_path, 
+            mimetype=file.mimetype,  # Corregido: Especificar el mimetype es crucial
+            chunksize=-1, 
+            resumable=True)
         
         request_youtube = youtube_service.videos().insert(
             part='snippet,status', # Corregido: 'part' debe ser una cadena explícita
