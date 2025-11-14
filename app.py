@@ -349,16 +349,13 @@ def index():
         sorted_section_nums = sorted(sections_data.keys(), key=int)
         context['sections'] = [sections_data[num] for num in sorted_section_nums]
 
-        # Guardar todo el contexto en la sesión para repoblar el formulario
-        session['form_data'] = context
-
         # Renderizar la plantilla de la newsletter a una variable
         newsletter_html = render_template('template.html', **context)
         
         # Inliner los estilos CSS
         p = Pynliner()
         newsletter_html = p.from_string(newsletter_html).run()
-        session['form_data'] = context # Guardar datos antes de mostrar el resultado
+        session['form_data'] = context # Corregido: Guardar datos DESPUÉS de procesar todo
 
         # Devolver la página de resultados con el código de la newsletter
         return render_template('result.html', newsletter_html=newsletter_html)
