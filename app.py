@@ -12,7 +12,7 @@ from googleapiclient.http import MediaFileUpload
 from googleapiclient.errors import HttpError
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'your_super_secret_key_for_dev') # Usar una clave fija para desarrollo o desde variable de entorno
 
 # Configuración de OAuth
 CLIENT_SECRETS_FILE = "client_secret.json"
@@ -435,7 +435,12 @@ def manage_images_page(folder_id):
 @app.route('/save_template', methods=['POST'])
 def save_template():
     drive_service, error_response, status_code = get_drive_service()
-    if error_response or 'form_data' not in session:
+    if error_response:
+        return error_response, status_code
+
+    if not session.get('form_data'): # Verifica si 'form_data' no existe o está vacío
+        print("DEBUG: 'form_data' NOT found or is empty in session when saving template.")
+        print(f"DEBUG: Current session keys: {list(session.keys())}")
         return jsonify({'error': 'No form data to save'}), 400
 
     data = request.get_json()
