@@ -208,7 +208,7 @@ def upload_video():
         media = MediaFileUpload(temp_file_path, chunksize=-1, resumable=True)
         
         request_youtube = youtube_service.videos().insert(
-            part=','.join(body.keys()),
+            part='snippet,status', # Corregido: 'part' debe ser una cadena explícita
             body=body,
             media_body=media
         )
