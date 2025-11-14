@@ -86,7 +86,7 @@
                     </tr>
 
                     <!-- Bucle de Secciones -->
-                    {% for section in sections %}
+                    {% for section in sections if section.img_src and section.title %}
                     <tr class="main-bg" bgcolor="{% if bg_type == 'solid' %}{{ bg_color }}{% else %}{{ bg_color_1 }}{% endif %}">
                         <td style="padding: 20px 30px 0 30px;" class="main-content">
                             <img src="{{ section.img_src }}" alt="{{ section.img_alt }}" style="width: 100%; max-width: 540px; height: auto; display: block; border-radius: 5px; margin-bottom: 15px;" class="responsive-img">
@@ -105,6 +105,8 @@
                     {% endfor %}
                     <!-- Fin del Bucle de Secciones -->
 
+                    <!-- Sección de Vídeo (solo si hay enlace y miniatura) -->
+                    {% if video_link and video_thumbnail_src %}
                     <tr class="main-bg" bgcolor="{% if bg_type == 'solid' %}{{ bg_color }}{% else %}{{ bg_color_1 }}{% endif %}">
                         <td style="padding: 30px 30px 0 30px;" class="main-content">
                             <h2 style="font-size: {{ title_font_size|default('20px') }}; margin: 0 0 15px 0; color: {{ title_color }}; font-family: {{ font_family }};">{{ video_title | safe }}</h2>
@@ -118,6 +120,7 @@
                             </a>
                         </td>
                     </tr>
+                    {% endif %}
 
                     <tr>
                         <td align="center" style="padding: 30px; text-align: center; background-color: #f9f9f9; font-size: 12px; color: #777777;" class="header-footer footer-text">
