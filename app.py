@@ -96,6 +96,13 @@ def credentials_to_dict(credentials):
             'client_secret': credentials.client_secret,
             'scopes': credentials.scopes}
 
+@app.route('/logout')
+def logout():
+    # Eliminar las credenciales de la sesión
+    session.pop('credentials', None)
+    session.pop('form_data', None) # También limpiamos los datos del formulario
+    return redirect(url_for('index'))
+
 @app.route('/get_or_create_folder', methods=['POST'])
 def get_or_create_folder():
     drive_service, error_response, status_code = get_drive_service()
