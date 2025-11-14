@@ -381,15 +381,21 @@
     <button id="theme-toggle" class="theme-toggle">🌙</button>
 
     <h1>Generador de Contenido para Newsletter</h1>
-    <form action="{{ url_for('index') }}" method="post">
+    <form action="{{ url_for('index') }}" method="post" style="position: relative;">
+
+        {% if credentials_exist %}
+        <div style="position: absolute; top: 20px; right: 20px;">
+            <a href="{{ url_for('logout') }}" class="auth-button" style="padding: 8px 15px; font-size: 0.9em; background-color: #6c757d;">Desconectar de Google</a>
+        </div>
+        {% endif %}
 
         <!-- Botón y Modal para Cargar Plantillas -->
         <div style="margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;">
             <button type="button" id="load-template-btn" style="padding: 10px 15px; font-size: 1em; margin-bottom: 10px;">Cargar Plantilla</button>
             <h4 style="margin-top: 15px; margin-bottom: 10px; border-top: 1px solid #ccc; padding-top: 15px;">Gestión de plantillas en Drive</h4>
-            <!-- Botón y desplegable para borrar plantillas -->
-            <button type="button" id="delete-template-btn" style="padding: 10px 15px; font-size: 1em; background-color: #dc3545; color: white; border: none; border-radius: 5px; display: none; vertical-align: middle;">Borrar Seleccionada</button>
-            <select id="template-delete-select" style="padding: 10px; font-size: 1em; display: none; vertical-align: middle;"></select>
+            <!-- Desplegable y botón para borrar plantillas -->
+            <select id="template-delete-select" style="padding: 10px; font-size: 1em; display: none; width: 100%; box-sizing: border-box; margin-bottom: 10px;"></select>
+            <button type="button" id="delete-template-btn" style="padding: 10px 15px; font-size: 1em; background-color: #dc3545; color: white; border: none; border-radius: 5px; display: none; width: 100%; box-sizing: border-box;">Borrar Seleccionada</button>
         </div>
 
         <!-- El Modal (inicialmente oculto) -->
