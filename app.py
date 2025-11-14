@@ -9,6 +9,7 @@ import google.oauth2.credentials
 import google_auth_oauthlib.flow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
+from googleapiclient.errors import HttpError
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -217,14 +218,24 @@ def upload_video():
         )
         
         response = request_youtube.execute()
+    except HttpError as e:
+        error_details = json.loads(e.content.decode('utf-8'))
+        error_reason = error_details.get('error', {}).get('errors', [{}])[0].get('reason')
+        
+        print(f"YouTube API Error Details: {error_details}")
+
+        if error_reason == 'youtubeSignupRequired':
+            # Error específico cuando no existe un canal de YouTube
+            return jsonify({'error': 'No se pudo subir el vídeo. La cuenta de Google no tiene un canal de YouTube. Por favor, ve a YouTube.com, inicia sesión y crea un canal.'}), 403
+        
+        print("Error uploading to YouTube: {}".format(e))
+        return jsonify({'error': 'Ocurrió un error con la API de YouTube. Revisa la consola del servidor para más detalles.'}), 500
     except Exception as e:
         print("Error uploading to YouTube: {}".format(e))
+        return jsonify({'error': 'Ocurrió un error inesperado durante la subida del vídeo.'}), 500
     finally:
         # Clean up the temporary file
         os.remove(temp_file_path)
-        
-    if not response:
-        return jsonify({'error': 'Failed to upload file to YouTube'}), 500
 
     video_id = response.get('id')
     video_url = "https://www.youtube.com/watch?v={}".format(video_id)
