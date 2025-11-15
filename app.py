@@ -40,6 +40,9 @@ def get_drive_service():
             pass
         drive_service = build('drive', 'v3', credentials=credentials)
         return drive_service, None, None
+    except HttpError as e:
+        if e.resp.status == 401:
+            return None, jsonify({'error': 'Invalid credentials', 'details': str(e)}), 401
     except Exception as e:
         return None, jsonify({'error': 'Invalid credentials', 'details': str(e)}), 401
 
