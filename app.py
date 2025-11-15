@@ -552,8 +552,28 @@ def delete_template(template_id):
 
 @app.route('/manage_images', methods=['POST'])
 def manage_images_view():
-    # Guardamos los datos del formulario que vienen del POST en la sesión
-    session['form_data'] = request.form.to_dict(flat=True)
+    # CORREGIDO: Procesar el MultiDict correctamente para no perder datos de secciones.
+    form_data = {}
+    sections_data = {}
+    for key, value in request.form.items(multi=True):
+        if key.startswith('section'):
+            parts = key.split('_')
+            section_num = parts[0].replace('section', '')
+            field_name = '_'.join(parts[1:])
+            
+            if section_num not in sections_data:
+                sections_data[section_num] = {'id': section_num}
+            sections_data[section_num][field_name] = value
+        else:
+            # Para campos que no son de sección, tomamos el primer valor (no deberían repetirse)
+            if key not in form_data:
+                form_data[key] = value
+
+    # Ordenar y añadir secciones al diccionario principal
+    sorted_section_nums = sorted(sections_data.keys(), key=int)
+    form_data['sections'] = [sections_data[num] for num in sorted_section_nums]
+    
+    session['form_data'] = form_data
     folder_id = request.form.get('drive_folder_id')
     if not folder_id:
         # Si no hay folder_id, no podemos continuar. Volvemos al formulario.
