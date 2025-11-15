@@ -454,6 +454,10 @@
             function fetchTemplates() {
                 fetch('/list_templates')
                     .then(response => {
+                        if (response.status === 401) {
+                            window.location.href = '/authorize'; // Redirigir a autenticación
+                            throw new Error('Credenciales inválidas. Redirigiendo...');
+                        }
                         if (!response.ok) throw new Error('Error de autenticación o del servidor.');
                         return response.json();
                     })
@@ -906,6 +910,10 @@
 
             fetch('/list_drive_folders')
                 .then(response => {
+                    if (response.status === 401) {
+                        window.location.href = '/authorize'; // Redirigir a autenticación
+                        throw new Error('Credenciales inválidas. Redirigiendo...');
+                    }
                     if (!response.ok) throw new Error('No se pudo cargar la lista de carpetas.');
                     return response.json();
                 })
