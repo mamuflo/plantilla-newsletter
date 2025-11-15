@@ -420,6 +420,17 @@
             </div>
         </div>
 
+        <!-- Modal de Confirmación de Sobrescritura -->
+        <div id="overwrite-confirm-modal" class="delete-modal-overlay">
+            <div class="delete-modal-content">
+                <p id="overwrite-modal-text">Ya existe una plantilla con este nombre. ¿Deseas sobrescribirla?</p>
+                <div class="delete-modal-actions">
+                    <button id="overwrite-modal-cancel-btn" class="upload-button" style="background-color: #6c757d;">Cancelar</button>
+                    <button type="button" id="overwrite-modal-confirm-btn" class="upload-button" style="background-color: #ffc107; color: #212529;">Sobrescribir</button>
+                </div>
+            </div>
+        </div>
+
         <script>
         document.addEventListener('DOMContentLoaded', function() {
             const loadBtn = document.getElementById('load-template-btn');
