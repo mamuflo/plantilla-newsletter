@@ -34,6 +34,10 @@ def get_drive_service():
     
     try:
         credentials = google.oauth2.credentials.Credentials(**session['credentials'])
+        # Si las credenciales han sido revocadas o son inválidas, esto lanzará una excepción
+        if credentials.expired and credentials.refresh_token:
+            # No es un error, pero es bueno saberlo. El cliente se encargará de refrescar.
+            pass
         drive_service = build('drive', 'v3', credentials=credentials)
         return drive_service, None, None
     except Exception as e:
