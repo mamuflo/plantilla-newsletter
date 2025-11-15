@@ -435,6 +435,139 @@ def manage_images_page(folder_id):
     except Exception as e:
         print("Error en manage_images_page: {}".format(e))
         # Podrías redirigir a una página de error o de vuelta al formulario con un mensaje.
+    form_data = session.get('form_data', {})
+    return render_template('manage_images.html', images=images, form_data=form_data)
+
+@app.route('/save_template', methods=['POST'])
+def save_template():
+    drive_service, error_response, status_code = get_drive_service()
+    if error_response:
+        return error_response, status_code
+
+    if not session.get('form_data'): # Verifica si 'form_data' no existe o está vacío
+        print("DEBUG: 'form_data' NOT found or is empty in session when saving template.")
+        print(f"DEBUG: Current session keys: {list(session.keys())}")
+        return jsonify({'error': 'No form data to save'}), 400
+
+    data = request.get_json()
+    filename = data.get('filename')
+    file_id_to_update = data.get('file_id') # Nuevo: para sobrescribir
+    if not filename:
+        return jsonify({'error': 'Filename is required'}), 400
+
+    # Asegurarse de que el nombre del archivo termine en .json
+    if not filename.endswith('.json'):
+        filename += '.json'
+
+    # 1. Buscar o crear la carpeta "Newsletter_Templates"
+    folder_name = "Newsletter_Templates"
+    query = "mimeType='application/vnd.google-apps.folder' and name='{}' and trashed=false".format(folder_name)
+    response = drive_service.files().list(q=query, spaces='drive', fields='files(id)').execute()
+    files = response.get('files', [])
+
+    if files:
+        folder_id = files[0].get('id')
+    else:
+        file_metadata = {'name': folder_name, 'mimeType': 'application/vnd.google-apps.folder'}
+        folder = drive_service.files().create(body=file_metadata, fields='id').execute()
+        folder_id = folder.get('id')
+
+    # Si no se está actualizando, comprobar si el archivo ya existe
+    if not file_id_to_update:
+        query_exists = "'{}' in parents and name='{}' and trashed=false".format(folder_id, filename)
+        response_exists = drive_service.files().list(q=query_exists, spaces='drive', fields='files(id)').execute()
+        existing_files = response_exists.get('files', [])
+        if existing_files:
+            return jsonify({
+                'status': 'conflict', 
+                'message': 'Ya existe una plantilla con este nombre.',
+                'file_id': existing_files[0].get('id')
+            }), 409 # 409 Conflict
+
+    # 2. Preparar los datos y el archivo temporal
+    template_data = json.dumps(session['form_data'], indent=4)
+    try:
+        with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix='.json', encoding='utf-8') as temp_file:
+            temp_file.write(template_data)
+            temp_file_path = temp_file.name
+
+        media = MediaFileUpload(temp_file_path, mimetype='application/json', resumable=True)
+
+        if file_id_to_update:
+            # Actualizar archivo existente
+            drive_service.files().update(fileId=file_id_to_update, media_body=media).execute()
+            message = 'Plantilla "{}" sobrescrita en Google Drive.'.format(filename)
+        else:
+            # Crear archivo nuevo
+            file_metadata = {'name': filename, 'parents': [folder_id]}
+            drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+            message = 'Plantilla "{}" guardada en Google Drive.'.format(filename)
+
+        os.remove(temp_file_path) # Limpiar el archivo temporal
+        return jsonify({'success': True, 'message': message})
+    except Exception as e:
+        print("Error saving template to Drive: {}".format(e))
+        return jsonify({'error': 'Failed to save template to Google Drive'}), 500
+
+@app.route('/list_templates', methods=['GET'])
+def list_templates():
+    drive_service, error_response, status_code = get_drive_service()
+    if error_response:
+        return error_response, status_code
+
+    # Buscar la carpeta "Newsletter_Templates"
+    folder_name = "Newsletter_Templates"
+    query = "mimeType='application/vnd.google-apps.folder' and name='{}' and trashed=false".format(folder_name)
+    response = drive_service.files().list(q=query, spaces='drive', fields='files(id)').execute()
+    if not response.get('files', []):
+        return jsonify([]) # No hay carpeta, por lo tanto no hay plantillas
+
+    folder_id = response.get('files')[0].get('id')
+
+    # Listar archivos .json en la carpeta
+    query = "'{}' in parents and mimeType='application/json' and trashed=false".format(folder_id)
+    response = drive_service.files().list(q=query, spaces='drive', fields='files(id, name)').execute()
+    templates = response.get('files', [])
+    
+    return jsonify(sorted(templates, key=lambda x: x['name'].lower()))
+
+@app.route('/load_template/<template_id>', methods=['GET'])
+def load_template(template_id):
+    if 'credentials' not in session:
+        return redirect(url_for('authorize')) # Redirige a login si no hay sesión
+    drive_service, error_response, status_code = get_drive_service()
+    if error_response: # Redirige a login si las credenciales son inválidas
+        return redirect(url_for('authorize'))
+    try:
+        # Forma actualizada y más simple de descargar el contenido del archivo
+        file_content = drive_service.files().get_media(fileId=template_id).execute()
+        
+        # Decodificar el contenido y cargarlo como JSON
+        template_data = json.loads(file_content.decode('utf-8'))
+        session['form_data'] = template_data
+        return redirect(url_for('index'))
+    except Exception as e:
+        print("Error loading template from Drive: {}".format(e))
+        # Aquí podrías redirigir a una página de error o mostrar un flash message
+        return "Error al cargar la plantilla desde Google Drive: {}".format(e), 500
+
+@app.route('/delete_template/<template_id>', methods=['DELETE'])
+def delete_template(template_id):
+    drive_service, error_response, status_code = get_drive_service()
+    if error_response:
+        return error_response, status_code
+    try:
+        drive_service.files().delete(fileId=template_id).execute()
+        return jsonify({'success': True, 'message': 'Plantilla eliminada con éxito.'})
+    except Exception as e:
+        print("Error deleting template from Drive: {}".format(e))
+        error_message = str(e)
+        if 'insufficient permissions' in error_message.lower():
+            return jsonify({'error': 'Permisos insuficientes para eliminar la plantilla.'}), 403
+        if 'notFound' in error_message:
+            return jsonify({'error': 'La plantilla no fue encontrada. Puede que ya haya sido eliminada.'}), 404
+        
+        return jsonify({'error': 'No se pudo eliminar la plantilla de Google Drive.'}), 500
 
 @app.route('/manage_images', methods=['POST'])
 def manage_images_view():
