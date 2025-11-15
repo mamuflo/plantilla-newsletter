@@ -1135,11 +1135,9 @@
                 alert("Por favor, selecciona una carpeta primero.");
                 return;
             }
-            // Cambiamos la acción del formulario y el método para enviar los datos a la página de gestión
-            const form = document.querySelector('form');
-            form.action = "{{ url_for('manage_images_view') }}";
-            form.method = 'post';
-            form.submit();
+            // Guardamos los datos del formulario y redirigimos
+            document.querySelector('form').action = "{{ url_for('manage_images_view') }}";
+            document.querySelector('form').submit();
         }
 
         async function uploadSingleImageFromInput(fileInputId) {
