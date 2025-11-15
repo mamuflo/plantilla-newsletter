@@ -1137,7 +1137,7 @@
             }
             // Cambiamos la acción del formulario y el método para enviar los datos a la página de gestión
             const form = document.querySelector('form');
-            form.action = "{{ url_for('manage_images_view') }}"; // Corrected this line
+            form.action = "{{ url_for('manage_images_view') }}";
             form.method = 'post';
             form.submit();
         }
