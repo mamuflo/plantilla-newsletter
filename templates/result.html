@@ -218,6 +218,12 @@
     <div class="controls">
         <a href="{{ url_for('index') }}" class="button secondary">Volver al Formulario</a>
         <button id="copyButton" class="button">Copiar para Outlook</button>
+        <!-- Botón para Guardar Plantilla -->
+        {% if 'credentials' in session and session['credentials'] %}
+        <button id="save-template-btn" class="button" style="background-color: #28a745;">
+            Guardar Plantilla en Drive
+        </button>
+        {% endif %}
         <button id="copyAndOpenOutlookButton" class="button">Copiar y Abrir en Outlook</button>
     </div>
 
@@ -475,13 +481,6 @@
             });
         });
     </script>
-
-    <!-- Botón para Guardar Plantilla -->
-    <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000;">
-        <button id="save-template-btn" style="padding: 12px 25px; font-size: 16px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
-            Guardar Plantilla en Drive
-        </button>
-    </div>
 
 </body>
 </html>

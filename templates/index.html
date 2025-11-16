@@ -421,17 +421,6 @@
             </div>
         </div>
 
-        <!-- Modal de Confirmación de Sobrescritura -->
-        <div id="overwrite-confirm-modal" class="delete-modal-overlay">
-            <div class="delete-modal-content">
-                <p id="overwrite-modal-text">Ya existe una plantilla con este nombre. ¿Deseas sobrescribirla?</p>
-                <div class="delete-modal-actions">
-                    <button id="overwrite-modal-cancel-btn" class="upload-button" style="background-color: #6c757d;">Cancelar</button>
-                    <button type="button" id="overwrite-modal-confirm-btn" class="upload-button" style="background-color: #ffc107; color: #212529;">Sobrescribir</button>
-                </div>
-            </div>
-        </div>
-
         <script>
         document.addEventListener('DOMContentLoaded', function() {
             const loadBtn = document.getElementById('load-template-btn');
@@ -446,11 +435,6 @@
             const deleteCancelBtn = document.getElementById('delete-modal-cancel-btn');
             const deleteConfirmBtn = document.getElementById('delete-modal-confirm-btn');
             let templateIdToDelete = null;
-
-            const overwriteModal = document.getElementById('overwrite-confirm-modal');
-            const overwriteCancelBtn = document.getElementById('overwrite-modal-cancel-btn');
-            const overwriteConfirmBtn = document.getElementById('overwrite-modal-confirm-btn');
-            let overwriteData = null;
 
             function fetchTemplates() {
                 fetch('/list_templates')
@@ -555,52 +539,6 @@
                 
                 deleteCancelBtn.onclick(); // Cerrar modal
             });
-
-            // --- Lógica para Sobrescribir Plantilla ---
-            overwriteCancelBtn.onclick = () => {
-                overwriteModal.style.opacity = '0';
-                overwriteModal.style.visibility = 'hidden';
-                overwriteData = null;
-            };
-
-            overwriteConfirmBtn.addEventListener('click', () => {
-                if (overwriteData) {
-                    // Llamar de nuevo a la función de guardado, pero con el file_id para sobrescribir
-                    saveTemplate(overwriteData.filename, overwriteData.file_id);
-                }
-                overwriteCancelBtn.onclick(); // Cerrar modal
-            });
-
-            function saveTemplate(filename, file_id = null) {
-                const payload = { filename: filename };
-                if (file_id) {
-                    payload.file_id = file_id;
-                }
-
-                fetch('/save_template', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                })
-                .then(response => {
-                    if (response.status === 409) { // Conflicto, el archivo ya existe
-                        return response.json().then(data => {
-                            overwriteData = { filename: filename, file_id: data.file_id };
-                            overwriteModal.style.opacity = '1';
-                            overwriteModal.style.visibility = 'visible';
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data && data.message) {
-                        alert(data.message);
-                        if (data.success) {
-                            fetchTemplates(); // ¡CORREGIDO! Recargar la lista de plantillas.
-                        }
-                    }
-                });
-            }
 
             // Cargar plantillas al inicio si el usuario está conectado
             {% if credentials_exist %}
