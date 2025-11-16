@@ -470,16 +470,25 @@
                             templates.forEach(template => {
                                 // Rellenar modal de carga
                                 const listItem = document.createElement('li');
-                                const link = document.createElement('a');
-                                link.href = "{{ url_for('load_template', template_id='__ID__') }}".replace('__ID__', template.id);
-                                link.textContent = template.name;
-                                link.style.display = 'block';
-                                link.style.padding = '8px 12px';
-                                link.style.textDecoration = 'none';
-                                link.style.color = '#007bff';
-                                link.onmouseover = function() { this.style.backgroundColor = '#f0f0f0'; };
-                                link.onmouseout = function() { this.style.backgroundColor = 'transparent'; };
-                                listItem.appendChild(link);
+                                const linkElement = document.createElement('a');
+                                linkElement.href = '#'; // Evita la navegación directa
+                                linkElement.textContent = template.name;
+                                linkElement.style.display = 'block';
+                                linkElement.style.padding = '8px 12px';
+                                linkElement.style.textDecoration = 'none';
+                                linkElement.style.color = '#007bff';
+                                linkElement.style.cursor = 'pointer';
+                                linkElement.onmouseover = function() { this.style.backgroundColor = '#f0f0f0'; };
+                                linkElement.onmouseout = function() { this.style.backgroundColor = 'transparent'; };
+
+                                // *** INICIO DE LA CORRECCIÓN ***
+                                linkElement.addEventListener('click', function(event) {
+                                    event.preventDefault(); // Prevenir el comportamiento por defecto del enlace
+                                    if (window.confirm(`¿Estás seguro de que quieres cargar la plantilla "${template.name}"? Perderás los cambios no guardados.`)) {
+                                        window.location.href = "{{ url_for('load_template', template_id='__ID__') }}".replace('__ID__', template.id);
+                                    }
+                                });
+                                listItem.appendChild(linkElement);
                                 templateList.appendChild(listItem);
 
                                 // Rellenar desplegable de borrado
