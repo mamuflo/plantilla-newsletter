@@ -591,7 +591,7 @@ def manage_images_view():
     # CORREGIDO: Procesar el MultiDict correctamente para no perder datos de secciones.
     form_data = {}
     sections_data = {}
-    for key, value in request.form.items(multi=True):
+    for key, value in request.form.items(multi=True): # Asegurarse de que multi=True está aquí
         if key.startswith('section'):
             parts = key.split('_')
             section_num = parts[0].replace('section', '')
