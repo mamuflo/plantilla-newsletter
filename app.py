@@ -45,6 +45,8 @@ def get_drive_service():
             return None, jsonify({'error': 'Invalid credentials', 'details': str(e)}), 401
     except Exception as e:
         return None, jsonify({'error': 'Invalid credentials', 'details': str(e)}), 401
+    session.pop('credentials', None) # Limpiar credenciales inválidas
+    return None, jsonify({'error': 'Invalid or expired credentials. Please re-authenticate.'}), 401
 
 @app.route('/authorize')
 def authorize():
@@ -236,7 +238,7 @@ def upload_video():
         error_details = json.loads(e.content.decode('utf-8'))
         error_reason = error_details.get('error', {}).get('errors', [{}])[0].get('reason')
         
-        print(f"YouTube API Error Details: {error_details}")
+        print("YouTube API Error Details: {}".format(error_details))
 
         if error_reason == 'youtubeSignupRequired':
             # Error específico cuando no existe un canal de YouTube
@@ -453,7 +455,7 @@ def save_template():
 
     if not session.get('form_data'): # Verifica si 'form_data' no existe o está vacío
         print("DEBUG: 'form_data' NOT found or is empty in session when saving template.")
-        print(f"DEBUG: Current session keys: {list(session.keys())}")
+        print("DEBUG: Current session keys: {}".format(list(session.keys())))
         return jsonify({'error': 'No form data to save'}), 400
 
     data = request.get_json()
