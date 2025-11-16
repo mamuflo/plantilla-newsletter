@@ -41,12 +41,14 @@ def get_drive_service():
         drive_service = build('drive', 'v3', credentials=credentials)
         return drive_service, None, None
     except HttpError as e:
+        # Si las credenciales son inválidas (ej. revocadas), la API devuelve 401
         if e.resp.status == 401:
-            return None, jsonify({'error': 'Invalid credentials', 'details': str(e)}), 401
+            session.pop('credentials', None) # Limpiar credenciales inválidas
+            return None, jsonify({'error': 'Invalid or expired credentials (HttpError). Please re-authenticate.'}), 401
     except Exception as e:
-        return None, jsonify({'error': 'Invalid credentials', 'details': str(e)}), 401
-    session.pop('credentials', None) # Limpiar credenciales inválidas
-    return None, jsonify({'error': 'Invalid or expired credentials. Please re-authenticate.'}), 401
+        # Otras excepciones durante la validación de credenciales
+        session.pop('credentials', None) # Limpiar credenciales inválidas
+        return None, jsonify({'error': 'Invalid or expired credentials (Exception). Please re-authenticate.'}), 401
 
 @app.route('/authorize')
 def authorize():
