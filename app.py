@@ -559,7 +559,10 @@ def load_template(template_id):
         # Decodificar el contenido y cargarlo como JSON
         template_data = json.loads(file_content.decode('utf-8'))
         session['form_data'] = template_data
-        return redirect(url_for('index'))
+        
+        # En lugar de redirigir (lo que puede causar race conditions), renderizamos directamente la plantilla
+        credentials_exist = 'credentials' in session
+        return render_template('index.html', credentials_exist=credentials_exist, form_data=template_data)
     except Exception as e:
         print("Error loading template from Drive: {}".format(e))
         # Aquí podrías redirigir a una página de error o mostrar un flash message
