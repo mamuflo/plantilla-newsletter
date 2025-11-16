@@ -471,7 +471,7 @@
                                 // Rellenar modal de carga
                                 const listItem = document.createElement('li');
                                 const link = document.createElement('a');
-                                link.href = '/load_template/' + template.id;
+                                link.href = "{{ url_for('load_template', template_id='__ID__') }}".replace('__ID__', template.id);
                                 link.textContent = template.name;
                                 link.style.display = 'block';
                                 link.style.padding = '8px 12px';
