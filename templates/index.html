@@ -638,16 +638,6 @@
                     <input type="file" id="hero_src_upload" accept="image/*" data-target-input="hero_src">
                     <span class="image-selector-placeholder" data-target-input="hero_src"></span>
                 </div>
-                <div class="resource-item">
-                    <label for="section1_img_src_upload" class="resource-label">Imagen (Sección 1):</label>
-                    <input type="file" id="section1_img_src_upload" accept="image/*" data-target-input="section1_img_src">
-                    <span class="image-selector-placeholder" data-target-input="section1_img_src"></span>
-                </div>
-                <div class="resource-item">
-                    <label for="section2_img_src_upload" class="resource-label">Imagen (Sección 2):</label>
-                    <input type="file" id="section2_img_src_upload" accept="image/*" data-target-input="section2_img_src">
-                    <span class="image-selector-placeholder" data-target-input="section2_img_src"></span>
-                </div>
                  <div class="resource-item">
                     <label for="video_thumbnail_src_upload" class="resource-label">Miniatura Vídeo:</label>
                     <input type="file" id="video_thumbnail_src_upload" accept="image/*" data-target-input="video_thumbnail_src">
@@ -701,50 +691,6 @@
 
             <label for="intro_p2">Párrafo de Introducción 2:</label>
             <textarea id="intro_p2" name="intro_p2">{{ form_data.intro_p2 | default('Explora nuestras nuevas líneas de formación, programas, recursos y proyectos diseñados para &lt;strong&gt;docentes&lt;/strong&gt; que buscan innovar en el aula.') | safe }}</textarea>
-        </fieldset>
-
-        <fieldset>
-            <legend>Sección 1</legend>
-            {% set section1 = form_data.sections[0] if form_data.sections and form_data.sections|length > 0 else {} %}
-            <label for="section1_img_src">URL de la Imagen (Sección 1):</label>
-            <input type="text" id="section1_img_src" name="section1_img_src" value="{{ section1.img_src | default('https://www.educantabria.es/documents/21790824/21790904/formacion.png') }}">
-
-            <label for="section1_img_alt">Texto Alternativo de la Imagen (Sección 1):</label>
-            <input type="text" id="section1_img_alt" name="section1_img_alt" value="{{ section1.img_alt | default('Formación para Docentes') }}">
-
-            <label for="section1_title">Título (Sección 1):</label>
-            <input type="text" id="section1_title" name="section1_title" value="{{ section1.title | default('Formación del Profesorado') }}">
-
-            <label for="section1_p">Párrafo (Sección 1):</label>
-            <textarea id="section1_p" name="section1_p">{{ section1.p | default('Actualiza tus competencias digitales, descubre metodologías activas y lidera el cambio en tu aula. Ofrecemos cursos prácticos, píldoras formativas y asesoramiento en proyectos de innovación.') }}</textarea>
-
-            <label for="section1_button_link">Enlace del Botón (Sección 1):</label>
-            <input type="text" id="section1_button_link" name="section1_button_link" value="{{ section1.button_link | default('https://aulacited.educantabria.es') }}">
-
-            <label for="section1_button_text">Texto del Botón (Sección 1):</label>
-            <input type="text" id="section1_button_text" name="section1_button_text" value="{{ section1.button_text | default('Ver Cursos para Docentes') }}">
-        </fieldset>
-
-        <fieldset>
-            <legend>Sección 2</legend>
-            {% set section2 = form_data.sections[1] if form_data.sections and form_data.sections|length > 1 else {} %}
-            <label for="section2_img_src">URL de la Imagen (Sección 2):</label>
-            <input type="text" id="section2_img_src" name="section2_img_src" value="{{ section2.img_src | default('https://www.educantabria.es/documents/21790824/21790904/programas.png') }}">
-
-            <label for="section2_img_alt">Texto Alternativo de la Imagen (Sección 2):</label>
-            <input type="text" id="section2_img_alt" name="section2_img_alt" value="{{ section2.img_alt | default('Programas CITED') }}">
-
-            <label for="section2_title">Título (Sección 2):</label>
-            <input type="text" id="section2_title" name="section2_title" value="{{ section2.title | default('Nuestros Programas') }}">
-
-            <label for="section2_p">Párrafo (Sección 2):</label>
-            <textarea id="section2_p" name="section2_p">{{ section2.p | default('Descubre los programas de innovación que impulsamos desde el CITED, diseñados para fomentar la integración de la tecnología y las nuevas metodologías en los centros educativos de Cantabria.') }}</textarea>
-
-            <label for="section2_button_link">Enlace del Botón (Sección 2):</label>
-            <input type="text" id="section2_button_link" name="section2_button_link" value="{{ section2.button_link | default('https://www.educantabria.es/web/cited/programas1') }}">
-
-            <label for="section2_button_text">Texto del Botón (Sección 2):</label>
-            <input type="text" id="section2_button_text" name="section2_button_text" value="{{ section2.button_text | default('Ver Todos los Programas') }}">
         </fieldset>
 
         <div id="dynamic-sections-container">
@@ -892,13 +838,12 @@
             // Repoblar secciones dinámicas
             if (window.formData && window.formData.sections) {
                 const sectionsData = window.formData.sections;
-                // Empezamos a añadir desde la tercera sección (índice 2)
-                if (sectionsData.length > 2) {
-                    for (let i = 2; i < sectionsData.length; i++) {
-                        // Pasamos los datos de la sección a la función para que los repueble
-                        addSection(sectionsData[i]);
-                    }
-                    // Actualizamos el contador global para que la siguiente sección que se añada tenga el número correcto
+                // Recorremos TODAS las secciones guardadas
+                if (sectionsData.length > 0) {
+                    sectionsData.forEach(sectionData => {
+                        addSection(sectionData);
+                    });
+                    // Actualizamos el contador para la siguiente sección nueva
                     sectionCounter = sectionsData.length + 1;
                 }
             }
@@ -982,7 +927,7 @@
             });
         }
 
-        let sectionCounter = 3; // Empezamos desde 3 porque 1 y 2 ya existen
+        let sectionCounter = 1; // Empezamos desde 1, todas las secciones son dinámicas
 
         function addSection(data = {}) {
             const container = document.getElementById('dynamic-sections-container');
