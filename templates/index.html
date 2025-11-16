@@ -895,6 +895,8 @@
                         // Pasamos los datos de la sección a la función para que los repueble
                         addSection(sectionsData[i]);
                     }
+                    // Actualizamos el contador global para que la siguiente sección que se añada tenga el número correcto
+                    sectionCounter = sectionsData.length + 1;
                 }
             }
 
@@ -981,7 +983,7 @@
 
         function addSection(data = {}) {
             const container = document.getElementById('dynamic-sections-container');
-            const sectionId = sectionCounter;
+            const sectionId = data.id ? parseInt(data.id, 10) : sectionCounter;
 
             const newSection = document.createElement('fieldset');
             newSection.id = `section-${sectionId}`;
