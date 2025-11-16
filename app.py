@@ -44,11 +44,14 @@ def get_drive_service():
         # Si las credenciales son inválidas (ej. revocadas), la API devuelve 401
         if e.resp.status == 401:
             session.pop('credentials', None) # Limpiar credenciales inválidas
-            return None, jsonify({'error': 'Invalid or expired credentials (HttpError). Please re-authenticate.'}), 401
+            return None, jsonify({'error': 'Invalid credentials (HttpError). Please re-authenticate.'}), 401
+        # Otros errores de la API de Google
+        return None, jsonify({'error': 'Google API error', 'details': str(e)}), e.resp.status
     except Exception as e:
         # Otras excepciones durante la validación de credenciales
         session.pop('credentials', None) # Limpiar credenciales inválidas
-        return None, jsonify({'error': 'Invalid or expired credentials (Exception). Please re-authenticate.'}), 401
+        # Devuelve 401 para forzar la re-autenticación, ya que es la causa más probable
+        return None, jsonify({'error': 'Invalid credentials (Exception). Please re-authenticate.'}), 401
 
 @app.route('/authorize')
 def authorize():
@@ -365,7 +368,7 @@ def index():
         
         # Convertir el diccionario de secciones a una lista ordenada
         sorted_section_nums = sorted(sections_data.keys(), key=int)
-        context['sections'] = [sections_data[num] for num in sorted_section_nums]
+        context['sections'] = [sections_data[num] for num in sorted_section_nums if sections_data[num]]
 
         # Renderizar la plantilla de la newsletter a una variable
         newsletter_html = render_template('template.html', **context)
