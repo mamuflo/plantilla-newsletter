@@ -349,7 +349,7 @@ def index():
 
         # Recoger secciones dinámicamente
         sections_data = {}
-        for key, value in request.form.items():
+        for key, value in request.form.items(multi=True):
             if key.startswith('section'):
                 parts = key.split('_')
                 section_num = parts[0].replace('section', '')
