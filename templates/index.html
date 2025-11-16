@@ -380,7 +380,8 @@
 
     <button id="theme-toggle" class="theme-toggle">🌙</button>
 
-    <h1>Generador de Contenido para Newsletter</h1>
+    <h1>Generador de Contenido de Outlook para Newsletter</h1>
+    <h3>&copy 2025 Manuel Muriel Flores</h3>
     <form action="{{ url_for('index') }}" method="post" style="position: relative;">
 
         {% if credentials_exist %}
@@ -693,7 +694,7 @@
             <input type="text" id="intro_title" name="intro_title" value="{{ form_data.intro_title | default('Descubre el CITED: Tu Futuro Empieza Aquí') }}">
 
             <label for="intro_p1">Párrafo de Introducción 1:</label>
-            <textarea id="intro_p1" name="intro_p1">{{ form_data.intro_p1 | default('El &lt;strong&gt;Centro de Innovación y Tecnología Educativa de Cantabria (CITED)&lt;/strong&gt; es tu punto de referencia para la transformación digital en la educación.') }}</textarea>
+            <textarea id="intro_p1" name="intro_p1">{{ form_data.intro_p1 | default('El &lt;strong&gt;Centro de Innovación en Tecnologías de la  Educación de Cantabria (CITED)&lt;/strong&gt; es tu punto de referencia para la transformación digital en la educación.') }}</textarea>
 
             <label for="intro_p2">Párrafo de Introducción 2:</label>
             <textarea id="intro_p2" name="intro_p2">{{ form_data.intro_p2 | default('Explora nuestras nuevas líneas de formación, programas, recursos y proyectos diseñados para &lt;strong&gt;docentes&lt;/strong&gt; que buscan innovar en el aula.') | safe }}</textarea>
@@ -756,10 +757,10 @@
             <label for="video_title">Título del Vídeo:</label>
             <input type="text" id="video_title" name="video_title" value="{{ form_data.video_title | default('Conoce el CITED en 1 Minuto') }}">
 
-            <label for="video_p">Párrafo del Vídeo:</label>
+            <label for="video_p">Descripción del Vídeo :</label>
             <textarea id="video_p" name="video_p">{{ form_data.video_p | default('Descubre nuestras instalaciones y todo lo que podemos ofrecerte en este breve video.') }}</textarea>
 
-            <label for="video_link">Enlace al Archivo de Vídeo o Página:</label>
+            <label for="video_link">Enlace al Archivo de Vídeo en Youtube o repositorio web en el que se aloje:</label>
             <input type="text" id="video_link" name="video_link" value="{{ form_data.video_link | default('https://www.educantabria.es/documents/21790824/21790889/Bienvenid%40s+al+CITED.mp4') }}">
 
             <label for="video_thumbnail_src">URL de la Imagen Miniatura del Vídeo:</label>
