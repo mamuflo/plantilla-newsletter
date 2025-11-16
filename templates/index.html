@@ -381,7 +381,7 @@
     <button id="theme-toggle" class="theme-toggle">🌙</button>
 
     <h1>Generador de Contenido de Outlook para Newsletter</h1>
-    <h3 style="text_align: center; margin-top: 1em; margin-bottom: 1em;">&copy 2025 Manuel Muriel Flores</h3>
+    <h1>&copy 2025 Manuel Muriel Flores</h1>
     <form action="{{ url_for('index') }}" method="post" style="position: relative;">
 
         {% if credentials_exist %}
@@ -586,6 +586,9 @@
                 .then(data => {
                     if (data && data.message) {
                         alert(data.message);
+                        if (data.success) {
+                            fetchTemplates(); // ¡CORREGIDO! Recargar la lista de plantillas.
+                        }
                     }
                 });
             }
