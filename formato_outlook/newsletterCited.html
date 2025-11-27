@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Newsletter CITED Cantabria</title>
+    <style>
+        /* --- Estilos Generales y Resets --- */
+        body {
+            margin: 0;
+            padding: 20px; /* Añadido padding para separar el contenido de los bordes en móvil */
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        a {
+            color: #005a9e; /* Azul institucional de Cantabria */
+            text-decoration: none;
+        }
+        .copy-button-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .copy-button {
+            background-color: #005a9e;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .copy-button:hover {
+            background-color: #003366;
+        }
+
+        /* --- Estilos para Móvil (Media Query) --- */
+        @media screen and (max-width: 600px) {
+            body {
+                padding: 10px; /* Menos padding en pantallas muy pequeñas */
+            }
+            .container {
+                width: 100% !important;
+                border-radius: 0 !important;
+            }
+            .main-content {
+                padding: 20px !important;
+            }
+            .responsive-img {
+                width: 100% !important;
+                height: auto !important;
+            }
+            .copy-button {
+                width: 100%;
+                padding: 20px;
+            }
+        }
+
+    </style>
+</head>
+<body style="margin: 0; padding: 20px; background-color: #f4f4f4; font-family: Arial, sans-serif;">
+
+    <div class="copy-button-container">
+        <button onclick="copyNewsletter()" class="copy-button">Copiar Newsletter para pegar en Outlook</button>
+    </div>
+
+    <div id="newsletter-content">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f4f4f4">
+            <tr>
+                <td align="center" style="padding: 20px 0;">
+                    
+                    <!-- Contenedor Principal -->
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="90%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #dddddd; border-radius: 8px; overflow: hidden;" class="container">
+                        
+                        <!-- 1. Cabecera (Logo CITED) -->
+                        <tr>
+                            <td align="center" style="padding: 20px; text-align: center; background-color: #f9f9f9; font-family: Arial, sans-serif; color: #333333;">
+                                <a href="https://educantabria.es/web/cited" target="_blank">
+                                    <img src="https://www.educantabria.es/documents/21790824/0/Logo+Cited_Aula+del+futuro+%281%29.png" alt="Logo CITED" style="max-width: 250px; height: auto; border: 0;">
+                                </a>
+                            </td>
+                        </tr>
+                        
+                        <!-- 2. Imagen Hero (Banner Principal) -->
+                        <tr>
+                            <td style="padding: 0 30px; font-family: Arial, sans-serif; color: #333333;">
+                                <a href="https://educantabria.es/web/cited" target="_blank">
+                                    <img src="https://www.educantabria.es/documents/21790824/21790904/artificial-intelligence-3706562_1920.jpg" alt="Innovación y Formación CITED" style="width: 100%; max-width: 540px; height: auto; display: block; border-radius: 5px;" class="responsive-img">
+                                </a>
+                            </td>
+                        </tr>
+
+                        <!-- 3. Contenido Principal (Texto Intro) -->
+                        <tr>
+                            <td style="padding: 30px; font-family: Arial, sans-serif; color: #333333;" class="main-content">
+                                <h1 style="font-size: 24px; font-weight: bold; color: #003366; margin: 0 0 20px 0;">Descubre el CITED: Tu Futuro Empieza Aquí</h1>
+                                <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px;">El <strong>Centro de Innovación y Tecnología Educativa de Cantabria (CITED)</strong> es tu punto de referencia para la transformación digital en la educación. </p>
+                                <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px;">Explora nuestras nuevas líneas de formación, programas, recursos y proyectos diseñados para <strong>docentes</strong> que buscan innovar en el aula.</p>
+                            </td>
+                        </tr>
+
+                        <!-- 4. Sección: Formación Docentes -->
+                        <tr>
+                            <td style="padding: 0 30px; padding-top: 20px; font-family: Arial, sans-serif; color: #333333;" class="main-content">
+                                <img src="https://www.educantabria.es/documents/21790824/21790904/formacion.png" alt="Formación para Docentes" style="width: 100%; max-width: 540px; height: auto; display: block; border-radius: 5px; margin-bottom: 15px;" class="responsive-img">
+                                <h2 style="font-size: 20px; color: #005a9e; margin: 0 0 15px 0;">Formación del Profesorado</h2>
+                                <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px;">Actualiza tus competencias digitales, descubre metodologías activas y lidera el cambio en tu aula. Ofrecemos cursos prácticos, píldoras formativas y asesoramiento en proyectos de innovación.</p>
+                                
+                                <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="text-align: center; padding: 10px 0 20px 0; margin: 0 auto;">
+                                    <tr>
+                                        <td align="center">
+                                            <a href="https://aulacited.educantabria.es" target="_blank" style="display: inline-block; background-color: #005a9e; color: #ffffff; padding: 12px 25px; font-size: 16px; font-weight: bold; text-decoration: none; border-radius: 5px;">Ver Cursos para Docentes</a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- 5. Sección: Programas CITED -->
+                        <tr>
+                            <td style="padding: 0 30px; padding-top: 20px; font-family: Arial, sans-serif; color: #333333;" class="main-content">
+                                <img src="https://www.educantabria.es/documents/21790824/21790904/programas.png" alt="Programas CITED" style="width: 100%; max-width: 540px; height: auto; display: block; border-radius: 5px; margin-bottom: 15px;" class="responsive-img">
+                                <h2 style="font-size: 20px; color: #005a9e; margin: 0 0 15px 0;">Nuestros Programas</h2>
+                                <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px;">Descubre los programas de innovación que impulsamos desde el CITED, diseñados para fomentar la integración de la tecnología y las nuevas metodologías en los centros educativos de Cantabria.</p>
+                                
+                                <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="text-align: center; padding: 10px 0 20px 0; margin: 0 auto;">
+                                    <tr>
+                                        <td align="center">
+                                            <a href="https://www.educantabria.es/web/cited/programas1" target="_blank" style="display: inline-block; background-color: #005a9e; color: #ffffff; padding: 12px 25px; font-size: 16px; font-weight: bold; text-decoration: none; border-radius: 5px;">Ver Todos los Programas</a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- 6. Sección "Video" -->
+                        <tr>
+                            <td style="padding: 30px 30px 0 30px; font-family: Arial, sans-serif; color: #333333;" class="main-content">
+                                <h2 style="font-size: 20px; color: #005a9e; margin: 0 0 15px 0;">Conoce el CITED en 1 Minuto</h2>
+                                <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px;">Descubre nuestras instalaciones y todo lo que podemos ofrecerte en este breve video.</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0 30px 30px 30px; text-align: center;">
+                                <a href="https://www.educantabria.es/documents/21790824/21790889/Bienvenid%40s+al+CITED.mp4" target="_blank" style="position: relative; text-align: center; display: block;">
+                                    <img src="https://www.educantabria.es/documents/21790824/21790904/video.png" alt="Ver video sobre el CITED" style="width: 100%; max-width: 540px; height: auto; display: block; border-radius: 5px;" class="responsive-img">
+                                </a>
+                            </td>
+                        </tr>
+
+                        <!-- 7. Pie de Página (Footer) -->
+                        <tr>
+                            <td align="center" style="padding: 30px; text-align: center; background-color: #f9f9f9; font-size: 12px; color: #777777; font-family: Arial, sans-serif;">
+                                <p style="font-size: 12px; color: #777777; margin: 0 0 10px 0;">
+                                    <strong>CITED - Centro de Innovación y Tecnología Educativa</strong><br>
+                                    Consejería de Educación, Formación Profesional y Universidades<br>
+                                    Gobierno de Cantabria
+                                </p>
+                                <p style="font-size: 12px; color: #777777; margin: 0 0 10px 0;"></p>
+                                <p style="font-size: 12px; color: #777777; margin: 0 0 10px 0;">
+                                    Visita nuestra web: <a href="https://educantabria.es/web/cited" target="_blank" style="color: #005a9e; text-decoration: underline;">educantabria.es/web/cited</a>
+                                </p>
+                                <p style="font-size: 10px; color: #999; margin: 0 0 10px 0;">
+                                    Has recibido este correo como miembro de la comunidad educativa. 
+                                </p>
+                            </td>
+                        </tr>
+
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        function copyNewsletter() {
+            const content = document.getElementById('newsletter-content');
+            const selection = window.getSelection();
+            const range = document.createRange();
+            
+            range.selectNodeContents(content);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            
+            try {
+                document.execCommand('copy');
+                alert('¡Newsletter copiada al portapapeles! Ya puedes pegarla en tu cliente de correo.');
+            } catch (err) {
+                alert('Error al copiar. Por favor, selecciona y copia el contenido manualmente.');
+            }
+            
+            selection.removeAllRanges();
+        }
+    </script>
+
+</body>
+</html>

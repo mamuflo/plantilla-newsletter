@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{PAGE_TITLE}}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: {{BACKGROUND_COLOR}}; font-family: Arial, sans-serif;">
+    <!-- Contenedor principal -->
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: {{BACKGROUND_COLOR}};">
+        <tr>
+            <td align="center">
+                <table width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; margin: 0 auto;">
+                    
+                    <!-- Cabecera -->
+                    <tr>
+                        <td align="center" style="padding: 20px 0; background-color: #ffffff;">
+                            <a href="{{HEADER_LINK}}" target="_blank" style="text-decoration: none;">
+                                <img src="{{HEADER_LOGO_URL}}" alt="{{HEADER_LOGO_ALT}}" style="display: block; max-width: 200px; height: auto; border: 0;">
+                            </a>
+                        </td>
+                    </tr>
+
+                    <!-- Banner Principal -->
+                    <tr>
+                        <td align="center" style="background-color: #ffffff;">
+                            <a href="{{BANNER_LINK}}" target="_blank" style="text-decoration: none;">
+                                <img src="{{BANNER_IMG_URL}}" alt="{{BANNER_IMG_ALT}}" style="width: 100%; max-width: 600px; height: auto; display: block; border: 0;">
+                            </a>
+                        </td>
+                    </tr>
+
+                    <!-- Contenido Introductorio -->
+                    <tr>
+                        <td align="center" style="padding: 40px 30px; background-color: #ffffff;">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td align="center">
+                                        <h1 style="color: {{TITLE_COLOR}}; font-size: 28px; font-family: Arial, sans-serif; margin: 0 0 25px 0; text-align: center; line-height: 1.3;">
+                                            {{INTRO_TITLE}}
+                                        </h1>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left" style="padding: 15px 0;">
+                                        <div style="color: {{PARAGRAPH_COLOR}}; font-size: 16px; font-family: Arial, sans-serif; line-height: 1.6; text-align: left;">
+                                            {{INTRO_P1}}
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left" style="padding: 15px 0;">
+                                        <div style="color: {{PARAGRAPH_COLOR}}; font-size: 16px; font-family: Arial, sans-serif; line-height: 1.6; text-align: left;">
+                                            {{INTRO_P2}}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Secciones Dinámicas -->
+                    {{SECTIONS}}
+
+                    <!-- Sección de Video -->
+                    <tr>
+                        <td align="center" style="padding: 40px 30px; background-color: #f8f9fa;">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td align="center">
+                                        <h2 style="color: {{TITLE_COLOR}}; font-size: 24px; font-family: Arial, sans-serif; margin: 0 0 20px 0; line-height: 1.3;">
+                                            {{VIDEO_TITLE}}
+                                        </h2>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" style="padding: 0 0 25px 0;">
+                                        <div style="color: {{PARAGRAPH_COLOR}}; font-size: 16px; font-family: Arial, sans-serif; line-height: 1.6; text-align: center;">
+                                            {{VIDEO_PARAGRAPH}}
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        <a href="{{VIDEO_LINK}}" target="_blank" style="text-decoration: none;">
+                                            <img src="{{VIDEO_THUMBNAIL_URL}}" alt="{{VIDEO_THUMBNAIL_ALT}}" style="width: 500px; height: 280px; object-fit: cover; display: block; margin: 0 auto; border: 0;">
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Pie de Página -->
+                    <tr>
+                        <td align="center" style="padding: 30px 20px; background-color: #f1f1f1;">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td align="center" style="padding: 10px 0;">
+                                        <p style="margin: 0; color: #666666; font-size: 12px; font-family: Arial, sans-serif;">
+                                            &copy; {{YEAR}} CITED Cantabria. Todos los derechos reservados.
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" style="padding: 5px 0;">
+                                        <p style="margin: 0; color: #666666; font-size: 12px; font-family: Arial, sans-serif;">
+                                            <a href="{{FOOTER_LINK}}" target="_blank" style="color: #666666; text-decoration: underline; font-family: Arial, sans-serif;">
+                                                {{FOOTER_LINK_TEXT}}
+                                            </a>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

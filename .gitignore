@@ -1,0 +1,32 @@
+# Miscellaneous
+*.class
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+
+# Flutter/Dart/Pub related
+.dart_tool/
+.packages
+.pub-cache/
+build/
+pubspec.lock
+
+# Android related
+**/android/captures/
+**/android/local.properties
+**/android/.gradle
+
+# Windows related
+**/windows/flutter/ephemeral
+**/windows/runner/Debug/
+**/windows/runner/Profile/
+**/windows/runner/Release/
+
+# IDEs, secrets, and logs
+.idea/
+.vscode/
+client_secret.json
+*.log

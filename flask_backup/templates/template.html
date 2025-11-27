@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        /* Estilos generales y responsivos */
+        .container {
+            width: 90% !important;
+            max-width: 600px !important;
+        }
+        .responsive-img {
+            width: 100% !important;
+            max-width: 540px !important;
+            height: auto !important;
+        }
+        @media screen and (max-width: 600px) {
+            .main-content {
+                padding: 20px !important;
+            }
+        }
+
+        /* Dark Mode para Clientes de Email Compatibles */
+        :root {
+            color-scheme: light dark;
+            supported-color-schemes: light dark;
+        }
+        @media (prefers-color-scheme: dark) {
+            body, table[role="presentation"] {
+                background-color: #1a1a1a !important;
+            }
+            .container {
+                border: 1px solid #444 !important;
+            }
+            .header-footer {
+                background-color: #2c2c2c !important;
+            }
+            .main-bg {
+                background-color: #222222 !important;
+                background-image: none !important;
+            }
+            h1, h2, p, strong {
+                color: #f1f1f1 !important;
+            }
+            .footer-text, .footer-text p, .footer-text a {
+                color: #ccc !important;
+            }
+            .button a {
+                background-color: #82c0ff !important;
+                color: #1a1a1a !important;
+            }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: {{ font_family }};">
+    
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+            <td align="center" style="padding: 20px 0;">
+                
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="90%" style="max-width: 600px; margin: 0 auto; border: 1px solid #dddddd; border-radius: 8px; overflow: hidden;" class="container">
+                    
+                    <tr>
+                        <td align="center" style="padding: 20px; text-align: center; background-color: #f9f9f9;" class="header-footer">
+                            <a href="{{ header_logo_link }}" target="_blank">
+                                <img src="{{ header_logo_src }}" alt="Logo CITED" style="max-width: 250px; height: auto; border: 0;">
+                            </a>
+                        </td>
+                    </tr>
+                    
+                    <tr class="main-bg" bgcolor="{% if bg_type == 'solid' %}{{ bg_color }}{% else %}{{ bg_color_1 }}{% endif %}">
+                        <td style="padding: 0 30px;">
+                            <a href="{{ hero_link }}" target="_blank">
+                                <img src="{{ hero_src }}" alt="{{ hero_alt }}" style="width: 100%; max-width: 540px; height: auto; display: block; border-radius: 5px;" class="responsive-img">
+                            </a>
+                        </td>
+                    </tr>
+
+                    <tr class="main-bg" bgcolor="{% if bg_type == 'solid' %}{{ bg_color }}{% else %}{{ bg_color_1 }}{% endif %}">
+                        <td style="padding: 30px;" class="main-content">
+                            <h1 style="font-size: {{ title_font_size|default('24px') }}; font-weight: bold; margin: 0 0 20px 0; color: {{ title_color }};">{{ intro_title }}</h1>
+                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px; color: {{ text_color }};">{{ intro_p1|safe }}</p>
+                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px; color: {{ text_color }};">{{ intro_p2|safe }}</p>
+                        </td>
+                    </tr>
+
+                    <!-- Bucle de Secciones -->
+                    {% for section in sections %}
+                    <tr class="main-bg" bgcolor="{% if bg_type == 'solid' %}{{ bg_color }}{% else %}{{ bg_color_1 }}{% endif %}">
+                        <td style="padding: 0 30px; padding-top: 20px;" class="main-content">
+                            <img src="{{ section.img_src }}" alt="{{ section.img_alt }}" style="width: 100%; max-width: 540px; height: auto; display: block; border-radius: 5px; margin-bottom: 15px;" class="responsive-img">
+                            <h2 style="font-size: {{ title_font_size|default('20px') }}; margin: 0 0 15px 0; color: {{ title_color }};">{{ section.title }}</h2>
+                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px; color: {{ text_color }};">{{ section.p|safe }}</p>
+                            
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="text-align: center; padding: 10px 0 20px 0; margin: 0 auto;">
+                                <tr>
+                                    <td align="center" bgcolor="#005a9e" style="border-radius: 5px;" class="button">
+                                        <a href="{{ section.button_link }}" target="_blank" style="display: inline-block; color: #ffffff; padding: 12px 25px; font-size: 16px; font-weight: bold; text-decoration: none;">{{ section.button_text }}</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <!-- Fin del Bucle de Secciones -->
+
+                    <tr class="main-bg" bgcolor="{% if bg_type == 'solid' %}{{ bg_color }}{% else %}{{ bg_color_1 }}{% endif %}">
+                        <td style="padding: 30px 30px 0 30px;" class="main-content">
+                            <h2 style="font-size: {{ title_font_size|default('20px') }}; margin: 0 0 15px 0; color: {{ title_color }};">{{ video_title }}</h2>
+                            <p style="margin: 0 0 15px 0; line-height: 1.6; font-size: 16px; color: {{ text_color }};">{{ video_p|safe }}</p>
+                        </td>
+                    </tr>
+                    <tr class="main-bg" bgcolor="{% if bg_type == 'solid' %}{{ bg_color }}{% else %}{{ bg_color_1 }}{% endif %}">
+                        <td style="padding: 0 30px 30px 30px; text-align: center;">
+                            <a href="{{ video_link }}" target="_blank" style="position: relative; text-align: center; display: block;">
+                                <img src="{{ video_thumbnail_src }}" alt="{{ video_thumbnail_alt }}" style="width: 100%; max-width: 540px; height: auto; display: block; border-radius: 5px;" class="responsive-img">
+                            </a>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="center" style="padding: 30px; text-align: center; background-color: #f9f9f9; font-size: 12px; color: #777777;" class="header-footer footer-text">
+                            <p style="font-size: 12px; margin: 0 0 10px 0;">
+                                <strong>CITED - Centro de Innovación y Tecnología Educativa</strong><br>
+                                Consejería de Educación, Formación Profesional y Universidades<br>
+                                Gobierno de Cantabria
+                            </p>
+                            <p style="font-size: 12px; margin: 0 0 10px 0;">
+                            </p>
+                            <p style="font-size: 12px; margin: 0 0 10px 0;">
+                                Visita nuestra web: <a href="{{ footer_web_link }}" target="_blank" style="color: #005a9e; text-decoration: underline;">{{ footer_web_text }}</a>
+                            </p>
+                            <p style="font-size: 10px; color: #999; margin: 0 0 10px 0;">
+                                Has recibido este correo como miembro de la comunidad educativa. 
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+                
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

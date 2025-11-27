@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{PAGE_TITLE}}</title>
+    <style>
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        table { border-collapse: collapse !important; }
+        body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; {{BACKGROUND_STYLE}} }
+        a[x-apple-data-detectors] {
+            color: inherit !important;
+            text-decoration: none !important;
+            font-size: inherit !important;
+            font-family: inherit !important;
+            font-weight: inherit !important;
+            line-height: inherit !important;
+        }
+    </style>
+</head>
+<body style="margin: 0 !important; padding: 0 !important; {{BACKGROUND_STYLE}}">
+    <!--[if mso | IE]>
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="600" align="center" style="width:600px;">
+    <tr>
+    <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
+    <![endif]-->
+    <div style="margin:0 auto;max-width:600px;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;">
+            <tbody>
+                <tr>
+                    <td style="direction:ltr;font-size:0px;padding:20px 0;text-align:center;" bgcolor="{{BACKGROUND_COLOR}}">
+                        
+                        <!-- HEADER -->
+                        <div style="margin:0px auto;max-width:600px;">
+                            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;">
+                                <tbody>
+                                    <tr>
+                                        <td style="direction:ltr;font-size:0px;padding:20px;text-align:center;">
+                                            <a href="{{HEADER_LINK}}" target="_blank">
+                                                <img src="{{HEADER_LOGO_URL}}" alt="{{HEADER_LOGO_ALT}}" style="width:150px;">
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- MAIN CONTENT -->
+                        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#ffffff;background-color:#ffffff;width:100%;">
+                            <tbody>
+                                <tr>
+                                    <td style="direction:ltr;font-size:0px;padding:0;text-align:center;">
+                                        
+                                        <!-- BANNER -->
+                                        <a href="{{BANNER_LINK}}" target="_blank">
+                                            <img src="{{BANNER_IMG_URL}}" alt="{{BANNER_IMG_ALT}}" style="width:100%;max-width:600px;height:auto;display:block;">
+                                        </a>
+
+                                        <!-- INTRO CONTENT -->
+                                        <div style="padding: 30px 25px; text-align: left; font-family: {{FONT_FAMILY}}, Arial, sans-serif; font-size: 16px; line-height: 1.5; color: {{PARAGRAPH_COLOR}};">
+                                            <h1 style="font-size: {{TITLE_SIZE}}; color: {{TITLE_COLOR}}; margin-bottom: 20px;">{{INTRO_TITLE}}</h1>
+                                            <div style="padding-bottom: 15px;">{{INTRO_P1}}</div>
+                                            <div>{{INTRO_P2}}</div>
+                                        </div>
+
+                                        <!-- DYNAMIC SECTIONS -->
+                                        <div style="padding: 0 25px;">
+                                            {{SECTIONS}}
+                                        </div>
+
+                                        <!-- VIDEO SECTION -->
+                                        <div style="padding: 20px 25px; text-align: center;">
+                                            <h2 style="font-size: {{TITLE_SIZE}}; color: {{TITLE_COLOR}}; margin-bottom: 10px;">{{VIDEO_TITLE}}</h2>
+                                            <p style="font-family: {{FONT_FAMILY}}, Arial, sans-serif; font-size: 16px; line-height: 1.5; color: {{PARAGRAPH_COLOR}}; margin-bottom: 20px;">{{VIDEO_PARAGRAPH}}</p>
+                                            <a href="{{VIDEO_LINK}}" target="_blank">
+                                                <img src="{{VIDEO_THUMBNAIL_URL}}" alt="{{VIDEO_THUMBNAIL_ALT}}" style="width:100%;max-width:550px;height:auto;display:block; margin: 0 auto;">
+                                            </a>
+                                        </div>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- FOOTER -->
+                        <div style="margin:0px auto;max-width:600px;">
+                            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;">
+                                <tbody>
+                                    <tr>
+                                        <td style="direction:ltr;font-size:0px;padding:20px;text-align:center; color: #888888; font-family: Arial, sans-serif; font-size: 12px;">
+                                            <p>&copy; {{YEAR}} CITED Cantabria. Todos los derechos reservados.</p>
+                                            <p>
+                                                <a href="{{FOOTER_LINK}}" target="_blank" style="color: #888888; text-decoration: underline;">{{FOOTER_LINK_TEXT}}</a>
+                                            </p>
+                                            <p>
+                                                Si no deseas recibir más comunicaciones, puedes <a href="#" target="_blank" style="color: #888888; text-decoration: underline;">darte de baja aquí</a>.
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!--[if mso | IE]>
+    </td>
+    </tr>
+    </table>
+    <![endif]-->
+</body>
+</html>
