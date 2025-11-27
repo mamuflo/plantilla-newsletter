@@ -438,6 +438,10 @@
                 border-left-width: 2px;
             }
         }
+
+        .d-none {
+            display: none !important;
+        }
     </style>
 </head>
 
@@ -670,14 +674,12 @@
                 <option value="gradient" {% if form_data.bg_type=='gradient' %}selected{% endif %}>Degradado</option>
             </select>
 
-            <div id="solid_color_picker"
-                style="display:{% if form_data.bg_type == 'gradient' %}none{% else %}block{% endif %};">
+            <div id="solid_color_picker" class="{% if form_data.bg_type == 'gradient' %}d-none{% endif %}">
                 <label for="bg_color">Color de Fondo:</label>
                 <input type="color" id="bg_color" name="bg_color" value="{{ form_data.bg_color|default('#f2f2f2') }}">
             </div>
 
-            <div id="gradient_color_picker"
-                style="display:{% if form_data.bg_type == 'gradient' %}block{% else %}none{% endif %};">
+            <div id="gradient_color_picker" class="{% if form_data.bg_type != 'gradient' %}d-none{% endif %}">
                 <label for="bg_color_1">Color de Fondo 1:</label>
                 <input type="color" id="bg_color_1" name="bg_color_1"
                     value="{{ form_data.bg_color_1|default('#f2f2f2') }}">
@@ -741,8 +743,12 @@
 
     </form>
 
+    <script id="form-data-json" type="application/json">
+        {{ form_data | tojson }}
+    </script>
+
     <script>
-        var formData = {{ form_data | tojson }};
+        var formData = JSON.parse(document.getElementById('form-data-json').textContent);
 
         document.addEventListener('DOMContentLoaded', function () {
             const themeToggle = document.getElementById('theme-toggle');
@@ -771,11 +777,11 @@
                 var solidPicker = document.getElementById('solid_color_picker');
                 var gradientPicker = document.getElementById('gradient_color_picker');
                 if (this.value === 'solid') {
-                    solidPicker.style.display = 'block';
-                    gradientPicker.style.display = 'none';
+                    solidPicker.classList.remove('d-none');
+                    gradientPicker.classList.add('d-none');
                 } else {
-                    solidPicker.style.display = 'none';
-                    gradientPicker.style.display = 'block';
+                    solidPicker.classList.add('d-none');
+                    gradientPicker.classList.remove('d-none');
                 }
             });
 
@@ -919,6 +925,12 @@
             });
 
             sectionCounter++;
+
+            // Si hay una carpeta seleccionada, cargar el selector de imágenes para la nueva sección
+            const folderId = document.getElementById('drive_folder_id').value;
+            if (folderId) {
+                updateImageSelectors(folderId);
+            }
         }
 
         function removeSection(sectionId) {
@@ -944,6 +956,10 @@
                 .then(images => {
                     const placeholders = document.querySelectorAll('.image-selector-placeholder');
                     placeholders.forEach(placeholder => {
+                        // Preservar valor seleccionado si existe
+                        const existingSelect = placeholder.querySelector('select');
+                        const previousValue = existingSelect ? existingSelect.value : null;
+
                         // Limpiar selector previo
                         placeholder.innerHTML = '';
 
@@ -968,6 +984,20 @@
                             option.value = image.url;
                             option.textContent = image.name;
                             select.appendChild(option);
+                        });
+
+                        // Restaurar valor previo si existe
+                        if (previousValue) {
+                            select.value = previousValue;
+                        }
+
+                        // Listener para actualizar el input cuando se selecciona una imagen
+                        select.addEventListener('change', function () {
+                            const inputId = this.getAttribute('data-target-input');
+                            const input = document.getElementById(inputId);
+                            if (input) {
+                                input.value = this.value;
+                            }
                         });
 
                         placeholder.appendChild(select);
